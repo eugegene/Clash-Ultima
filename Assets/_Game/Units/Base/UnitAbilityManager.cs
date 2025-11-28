@@ -114,39 +114,58 @@ public class UnitAbilityManager : MonoBehaviour
         _rangeIndicator.transform.position = newPos;
     }
 
-    private void ExecuteCast(AbilityDefinition ability)
+private void ExecuteCast(AbilityDefinition ability)
     {
-        // 1. Get Mouse Position logic
         Ray ray = _cam.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
         
         Vector3 point = Vector3.zero;
         UnitStats targetUnit = null;
 
-        if (Physics.Raycast(ray, out hit, 100f))
+        // IMPROVEMENT: RaycastAll lets us click a Unit even if the Mouse is technically hovering the ground "behind" it.
+        RaycastHit[] hits = Physics.RaycastAll(ray, 100f);
+        
+        // 1. First pass: Look for Units (High Priority)
+        foreach (var hit in hits)
         {
-            point = hit.point;
-            targetUnit = hit.collider.GetComponent<UnitStats>();
+            UnitStats unit = hit.collider.GetComponent<UnitStats>();
+            if (unit != null && unit.gameObject != gameObject) // Don't target self
+            {
+                targetUnit = unit;
+                point = hit.point; // Update point to unit pos
+                break; // Found a unit, stop looking
+            }
         }
 
-        // 2. Validate Targeting
+        // 2. Second pass: If no unit found, just get the ground point
+        if (targetUnit == null)
+        {
+            foreach (var hit in hits)
+            {
+                // Assuming your Floor has the "Default" or "Ground" layer
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Default")) 
+                {
+                    point = hit.point;
+                    break;
+                }
+            }
+        }
+
+        // 3. Validation
         if (ability.targetingMode == TargetingMode.TargetUnit && targetUnit == null)
         {
-            Debug.Log("Needs a target!");
+            Debug.Log("Invalid Target: You must click a Unit.");
             return;
         }
         
-        // 3. Cast!
+        // 4. Cast
         ability.OnCast(_stats, point, targetUnit);
 
-        // 4. Pay Costs & Trigger Cooldown
-        // (In a real system, we'd check which slot this ability belongs to to set the correct float)
+        // 5. Cooldowns
         if (ability == abilityQ) cooldownQ = ability.cooldown;
         if (ability == abilityW) cooldownW = ability.cooldown;
         if (ability == abilityE) cooldownE = ability.cooldown;
         if (ability == abilityR) cooldownR = ability.cooldown;
 
-        // 5. Reset
         _pendingAbility = null;
         _rangeIndicator.SetActive(false);
     }

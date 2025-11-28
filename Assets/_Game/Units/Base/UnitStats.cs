@@ -84,6 +84,28 @@ public class UnitStats : MonoBehaviour
         }
     }
 
+    public void TakeDamage(DamageMessage msg)
+    {
+        // 1. Calculate how much damage actually gets through armor
+        float finalDamage = DamageProcessor.CalculateFinalDamage(this, msg);
+
+        // 2. Apply to Health
+        CurrentHealth -= finalDamage;
+        
+        Debug.Log($"{name} took {finalDamage:F1} ({msg.Type}) damage from {msg.Source.name}. (Raw: {msg.Amount})");
+
+        // 3. Clamp & Die
+        if (CurrentHealth <= 0)
+        {
+            CurrentHealth = 0;
+            Die();
+        }
+        else if (CurrentHealth > MaxHealth.Value)
+        {
+            CurrentHealth = MaxHealth.Value;
+        }
+    }
+
     private void Die()
     {
         Debug.Log($"{name} has died.");

@@ -23,13 +23,17 @@ public class SimpleProjectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == _owner) return; // Don't hit self
+        if (other.gameObject == _owner) return; 
 
         UnitStats targetStats = other.GetComponent<UnitStats>();
         if (targetStats != null)
         {
-            // Deal Damage
-            targetStats.ModifyHealth(-_damage);
+            // NEW: Create a Message Packet
+            DamageMessage msg = new DamageMessage(_damage, DamageType.Magical, _owner);
+            
+            // Send it
+            targetStats.TakeDamage(msg);
+            
             Destroy(gameObject);
         }
     }
