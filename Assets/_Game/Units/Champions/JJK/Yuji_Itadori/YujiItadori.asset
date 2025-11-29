@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: YujiItadori
   m_EditorClassIdentifier: 
   unitName: Yuji Itadori
+  verse: Jujutsu Kaisen
   icon: {fileID: 0}
+  prefab: {fileID: 4925494567944679477, guid: c072dfc0519ddea48b284a48fde23a95, type: 3}
   maxHealth: 100
   healthRegen: 1.5
   resourceType: 5

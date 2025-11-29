@@ -5,7 +5,9 @@ public class UnitDefinition : ScriptableObject
 {
     [Header("Identity")]
     public string unitName;
+    public string verse;
     public Sprite icon;
+    public GameObject prefab;
     
     [Header("Core Stats")]
     public float maxHealth = 100f;

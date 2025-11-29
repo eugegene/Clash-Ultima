@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8e2c04eaed2b447bb0187b0dadc81b, type: 3}
   m_Name: TestPaladin
   m_EditorClassIdentifier: 
-  unitName: 
+  unitName: Test Paladin
+  verse: Misc
   icon: {fileID: 0}
+  prefab: {fileID: 0}
   maxHealth: 100
   healthRegen: 1.5
   resourceType: 0

@@ -10,6 +10,22 @@ public class GameLoopManager : MonoBehaviour
     public Transform blueSpawn;
     public float respawnTime = 5f;
 
+    void Start() // Changed from Awake to Start to ensure GameSession is ready
+    {
+        // Default to existing if nothing selected (for testing)
+        UnitDefinition pick = null;
+    
+        if (GameSession.Instance != null && GameSession.Instance.SelectedCharacter != null)
+        {
+            pick = GameSession.Instance.SelectedCharacter;
+        }
+
+        if (pick != null)
+        {
+            SpawnCharacter(pick, Team.Blue);
+        }
+    }
+    
     void Awake()
     {
         Instance = this;
@@ -49,5 +65,21 @@ public class GameLoopManager : MonoBehaviour
         // 6. Revive
         unit.gameObject.SetActive(true);
         Debug.Log($"{unit.name} respawned!");
+    }
+
+    public void SpawnCharacter(UnitDefinition def, Team team)
+    {
+        // Instantiate the Prefab from the Definition
+        Transform spawnPoint = (team == Team.Red) ? redSpawn : blueSpawn;
+        GameObject hero = Instantiate(def.prefab, spawnPoint.position, spawnPoint.rotation);
+    
+        // Initialize
+        UnitStats stats = hero.GetComponent<UnitStats>();
+        stats.definition = def; // Ensure data is injected
+        stats.team = team;
+        stats.InitializeStats();
+    
+        // Let camera follow
+        FindObjectOfType<MobaCamera>().targetToFollow = hero.transform;
     }
 }
