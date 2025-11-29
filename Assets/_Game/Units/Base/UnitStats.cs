@@ -1,21 +1,23 @@
 using UnityEngine;
 
-// This is the "Runtime" version of the stats.
-// It holds the ACTUAL values that change during the game.
 public class UnitStats : MonoBehaviour
 {
     [Header("Config")]
-    public UnitDefinition definition; // Drag the ScriptableObject here
+    public UnitDefinition definition;
 
-    [Header("Runtime Stats (Read Only)")]
-    // We use the Stat class we created to allow for Buffs/Debuffs
+    [Header("Runtime Stats")]
     public Stat Health;
     public Stat MaxHealth;
     public Stat HealthRegen;
-    
-    public Stat Resource; // Current Mana/Energy
+    public Stat Resource;
     public Stat MaxResource;
     public Stat ResourceRegen;
+    
+    // --- NEW STATS ADDED HERE ---
+    public Stat AttackDamage;
+    public Stat AttackRange;
+    public Stat AttackSpeed; // Attacks per second
+    // ----------------------------
 
     public Stat MoveSpeed;
     public Stat Armor;
@@ -24,16 +26,12 @@ public class UnitStats : MonoBehaviour
     [Header("Identity")]
     public Team team;
 
-    // Current State
     public float CurrentHealth { get; private set; }
     public float CurrentResource { get; private set; }
 
     private void Awake()
     {
-        if (definition != null)
-        {
-            InitializeStats();
-        }
+        if (definition != null) InitializeStats();
     }
 
     private void Update()
@@ -43,31 +41,35 @@ public class UnitStats : MonoBehaviour
 
     public void InitializeStats()
     {
-        // 1. Initialize Objects
         MaxHealth = new Stat(definition.maxHealth);
         HealthRegen = new Stat(definition.healthRegen);
-        
         MaxResource = new Stat(definition.maxResource);
         ResourceRegen = new Stat(definition.resourceRegen);
+        
+        // --- INIT NEW STATS ---
+        AttackDamage = new Stat(definition.attackDamage);
+        AttackRange = new Stat(definition.attackRange);
+        AttackSpeed = new Stat(definition.attackSpeed);
+        // ----------------------
 
         MoveSpeed = new Stat(definition.moveSpeed);
         Armor = new Stat(definition.armor);
         MagicResist = new Stat(definition.magicResist);
 
-        // 2. Set Current Values
         CurrentHealth = MaxHealth.Value;
         CurrentResource = MaxResource.Value;
     }
 
+    // ... (Keep Regenerate, ModifyHealth, TakeDamage, Die as they were) ...
+    // Just copy the rest of your existing file content here for those methods.
+    
     private void Regenerate()
     {
-        // Simple Regen Logic
         if (CurrentHealth < MaxHealth.Value)
         {
             CurrentHealth += HealthRegen.Value * Time.deltaTime;
             CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth.Value);
         }
-
         if (CurrentResource < MaxResource.Value)
         {
             CurrentResource += ResourceRegen.Value * Time.deltaTime;
@@ -75,52 +77,29 @@ public class UnitStats : MonoBehaviour
         }
     }
 
-    // Call this when taking damage
     public void ModifyHealth(float amount)
     {
         CurrentHealth += amount;
         CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth.Value);
-        
-        if (CurrentHealth <= 0)
-        {
-            Die();
-        }
+        if (CurrentHealth <= 0) Die();
     }
 
     public void TakeDamage(DamageMessage msg)
     {
-        // 1. Calculate how much damage actually gets through armor
         float finalDamage = DamageProcessor.CalculateFinalDamage(this, msg);
-
-        // 2. Apply to Health
         CurrentHealth -= finalDamage;
+        // Debug.Log($"{name} took {finalDamage} damage.");
         
-        Debug.Log($"{name} took {finalDamage:F1} ({msg.Type}) damage from {msg.Source.name}. (Raw: {msg.Amount})");
-
-        // 3. Clamp & Die
         if (CurrentHealth <= 0)
         {
             CurrentHealth = 0;
             Die();
         }
-        else if (CurrentHealth > MaxHealth.Value)
-        {
-            CurrentHealth = MaxHealth.Value;
-        }
     }
 
     private void Die()
     {
-        Debug.Log($"{name} has died.");
-        
-        // NEW CODE: Connect to GameLoop
-        if (GameLoopManager.Instance != null)
-        {
-            GameLoopManager.Instance.OnUnitDied(this);
-        }
-        else
-        {
-            Destroy(gameObject); // Fallback if no manager exists
-        }
+        if (GameLoopManager.Instance != null) GameLoopManager.Instance.OnUnitDied(this);
+        else Destroy(gameObject);
     }
 }

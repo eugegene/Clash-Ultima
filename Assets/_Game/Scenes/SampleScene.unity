@@ -178,6 +178,12 @@ MonoBehaviour:
     _baseValue: 0
   ResourceRegen:
     _baseValue: 0
+  AttackDamage:
+    _baseValue: 0
+  AttackRange:
+    _baseValue: 0
+  AttackSpeed:
+    _baseValue: 0
   MoveSpeed:
     _baseValue: 0
   Armor:
@@ -709,6 +715,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
+  unitLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!4 &861909172
 Transform:
   m_ObjectHideFlags: 0
@@ -1013,6 +1022,7 @@ GameObject:
   - component: {fileID: 1883881603}
   - component: {fileID: 1883881605}
   - component: {fileID: 1883881606}
+  - component: {fileID: 1883881607}
   m_Layer: 0
   m_Name: Hero
   m_TagString: Untagged
@@ -1032,7 +1042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74539653e0a4bd04a99d3bccec19b2d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definition: {fileID: 11400000, guid: cf3b2e9c342d6f24ea081eb4fdb30d46, type: 2}
+  definition: {fileID: 11400000, guid: 78cff1ab91ba56742beed5effc32fe22, type: 2}
   Health:
     _baseValue: 0
   MaxHealth:
@@ -1044,6 +1054,12 @@ MonoBehaviour:
   MaxResource:
     _baseValue: 0
   ResourceRegen:
+    _baseValue: 0
+  AttackDamage:
+    _baseValue: 0
+  AttackRange:
+    _baseValue: 0
+  AttackSpeed:
     _baseValue: 0
   MoveSpeed:
     _baseValue: 0
@@ -1151,6 +1167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d25bdbf67281c21458698a6527359d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsSelected: 1
 --- !u!195 &1883881604
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1188,6 +1205,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
+  unitLayer:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!114 &1883881606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1208,6 +1228,20 @@ MonoBehaviour:
   cooldownW: 0
   cooldownE: 0
   cooldownR: 0
+--- !u!114 &1883881607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1883881597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e73da4a8d43c7d24bb3ebfdd7745522d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentTarget: {fileID: 0}
+  attackCooldownTimer: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

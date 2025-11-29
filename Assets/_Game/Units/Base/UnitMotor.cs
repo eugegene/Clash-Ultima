@@ -7,38 +7,30 @@ public class UnitMotor : MonoBehaviour
 {
     private NavMeshAgent _agent;
     private UnitStats _stats;
-    private bool _isSelected = true; // Later this will be handled by a SelectionManager
+    public bool IsSelected = true; // Made public for debug
 
     void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
         _stats = GetComponent<UnitStats>();
-        
-        // Disable Agent rotation so we can smooth it ourselves
         _agent.updateRotation = false; 
     }
 
     void OnEnable()
     {
-        // Subscribe to the Input Event
         InputHandler.OnMoveCommand += OnMoveCommandReceived;
     }
 
     void OnDisable()
     {
-        // Always unsubscribe to prevent memory leaks!
         InputHandler.OnMoveCommand -= OnMoveCommandReceived;
     }
 
     void Update()
     {
-        // 1. Update Speed from Stats (In case we got Buffed/Slowed this frame)
-        // Note: In a super optimized game we would use events for speed changes too, 
-        // but for 200 units, polling is safer for a beginner architecture.
         _agent.speed = _stats.MoveSpeed.Value;
-        _agent.acceleration = 60f; // High acceleration for snappy MOBA feel
-
-        // 2. Handle Rotation manually for snappy turns
+        
+        // Manual Rotation
         if (_agent.velocity.sqrMagnitude > 0.1f)
         {
             Quaternion lookRotation = Quaternion.LookRotation(_agent.velocity.normalized);
@@ -46,12 +38,27 @@ public class UnitMotor : MonoBehaviour
         }
     }
 
+    // --- NEW PUBLIC METHODS ---
+
+    public void MoveToPoint(Vector3 point)
+    {
+        _agent.isStopped = false;
+        _agent.SetDestination(point);
+    }
+
+    public void StopMoving()
+    {
+        if (_agent.isOnNavMesh) 
+            _agent.isStopped = true;
+    }
+
+    // --------------------------
+
     private void OnMoveCommandReceived(Vector3 destination)
     {
-        // Only move if this specific unit is selected (For now, we assume single character)
-        if (_isSelected)
+        if (IsSelected)
         {
-            _agent.SetDestination(destination);
+            MoveToPoint(destination);
         }
     }
 }

@@ -4,11 +4,14 @@ using System;
 
 public class InputHandler : MonoBehaviour
 {
-    // We use C# Actions (Events) so other scripts can listen
     public static event Action<Vector3> OnMoveCommand;
+    // New Event for Attacking
+    public static event Action<UnitStats> OnAttackCommand;
 
     [Header("Settings")]
     public LayerMask groundLayer;
+    public LayerMask unitLayer; // Assign this in Inspector! (Usually "Default" or a custom "Unit" layer)
+
     private Camera _cam;
 
     void Start()
@@ -18,23 +21,32 @@ public class InputHandler : MonoBehaviour
 
     void Update()
     {
-        // Check Right Mouse Button (New Input System)
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
-            HandleClick();
+            HandleRightClick();
         }
     }
 
-    private void HandleClick()
+    private void HandleRightClick()
     {
         Vector2 mousePos = Mouse.current.position.ReadValue();
         Ray ray = _cam.ScreenPointToRay(mousePos);
         RaycastHit hit;
 
-        // Raycast to find the ground position
+        // 1. Check if we clicked a Unit
+        if (Physics.Raycast(ray, out hit, 100f, unitLayer))
+        {
+            UnitStats target = hit.collider.GetComponent<UnitStats>();
+            if (target != null)
+            {
+                OnAttackCommand?.Invoke(target);
+                return; // Priority: Unit Click > Ground Click
+            }
+        }
+
+        // 2. Check if we clicked Ground
         if (Physics.Raycast(ray, out hit, 100f, groundLayer))
         {
-            // Shout: "HEY! The player wants to move to THIS point!"
             OnMoveCommand?.Invoke(hit.point);
         }
     }
