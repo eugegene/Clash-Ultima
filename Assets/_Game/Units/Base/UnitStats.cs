@@ -112,6 +112,15 @@ public class UnitStats : MonoBehaviour
     private void Die()
     {
         Debug.Log($"{name} has died.");
-        // Trigger Death Event here later
+        
+        // NEW CODE: Connect to GameLoop
+        if (GameLoopManager.Instance != null)
+        {
+            GameLoopManager.Instance.OnUnitDied(this);
+        }
+        else
+        {
+            Destroy(gameObject); // Fallback if no manager exists
+        }
     }
 }

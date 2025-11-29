@@ -32,6 +32,8 @@ public class UnitHealthBar : MonoBehaviour
 
     void LateUpdate()
     {
+        transform.rotation = Quaternion.identity;
+
         if (targetUnit == null) return;
 
         // 1. Update Fill Amount based on HP

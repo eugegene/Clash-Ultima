@@ -114,35 +114,34 @@ public class UnitAbilityManager : MonoBehaviour
         _rangeIndicator.transform.position = newPos;
     }
 
-private void ExecuteCast(AbilityDefinition ability)
+    private void ExecuteCast(AbilityDefinition ability)
     {
         Ray ray = _cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         
         Vector3 point = Vector3.zero;
         UnitStats targetUnit = null;
 
-        // IMPROVEMENT: RaycastAll lets us click a Unit even if the Mouse is technically hovering the ground "behind" it.
+        // 1. RaycastAll to find units (prioritize units over ground)
         RaycastHit[] hits = Physics.RaycastAll(ray, 100f);
         
-        // 1. First pass: Look for Units (High Priority)
         foreach (var hit in hits)
         {
             UnitStats unit = hit.collider.GetComponent<UnitStats>();
-            if (unit != null && unit.gameObject != gameObject) // Don't target self
+            if (unit != null && unit.gameObject != gameObject) 
             {
                 targetUnit = unit;
-                point = hit.point; // Update point to unit pos
-                break; // Found a unit, stop looking
+                point = hit.point; 
+                break; 
             }
         }
 
-        // 2. Second pass: If no unit found, just get the ground point
+        // If no unit found, try to find ground
         if (targetUnit == null)
         {
             foreach (var hit in hits)
             {
-                // Assuming your Floor has the "Default" or "Ground" layer
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Default")) 
+                // Check if layer is Default (Layer 0) or Ground
+                if (hit.collider.gameObject.layer == 0 || hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground")) 
                 {
                     point = hit.point;
                     break;
@@ -150,17 +149,27 @@ private void ExecuteCast(AbilityDefinition ability)
             }
         }
 
-        // 3. Validation
-        if (ability.targetingMode == TargetingMode.TargetUnit && targetUnit == null)
+        // 2. Validate Targeting
+        if (ability.targetingMode == TargetingMode.TargetUnit)
         {
-            Debug.Log("Invalid Target: You must click a Unit.");
-            return;
+            if (targetUnit == null)
+            {
+                Debug.Log("Needs a target!");
+                return;
+            }
+
+            // NEW CODE: Check Friendly Fire
+            if (!TeamLogic.IsEnemy(_stats.team, targetUnit.team))
+            {
+                Debug.Log("Cannot target ally!");
+                return;
+            }
         }
         
-        // 4. Cast
+        // 3. Cast
         ability.OnCast(_stats, point, targetUnit);
 
-        // 5. Cooldowns
+        // 4. Set Cooldowns
         if (ability == abilityQ) cooldownQ = ability.cooldown;
         if (ability == abilityW) cooldownW = ability.cooldown;
         if (ability == abilityE) cooldownE = ability.cooldown;
