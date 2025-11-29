@@ -98,28 +98,46 @@ public class CharacterPickerUI : MonoBehaviour
         foreach (var item in _spawnedCharacters) item.SetNameVisibility(show);
     }
 
+    //public void OnCharacterSelected(UnitDefinition def)
+    //{
+    //    Debug.Log($"Selected: {def.unitName}");
+        
+    //    // 1. Save to Session
+    //    if (GameSession.Instance != null)
+    //    {
+    //        GameSession.Instance.SelectedCharacter = def;
+    //    }
+
+    //    // 2. Load Game (if we are in Main Menu)
+    //    // If we are already in the Sandbox, we might want to just Respawn (TODO)
+    //    if (SceneManager.GetActiveScene().name == "MainMenu")
+    //    {
+    //        SceneManager.LoadScene("SampleScene");
+    //    }
+    //    else
+    //    {
+    //        // We are in Sandbox -> Trigger Respawn logic here later
+    //        // For now, reload scene to apply change
+    //        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    //    }
+    //}
+
     public void OnCharacterSelected(UnitDefinition def)
     {
         Debug.Log($"Selected: {def.unitName}");
         
-        // 1. Save to Session
+        // 1. Save selection to the persistent GameSession
         if (GameSession.Instance != null)
         {
             GameSession.Instance.SelectedCharacter = def;
         }
-
-        // 2. Load Game (if we are in Main Menu)
-        // If we are already in the Sandbox, we might want to just Respawn (TODO)
-        if (SceneManager.GetActiveScene().name == "MainMenu")
-        {
-            SceneManager.LoadScene("SampleScene");
-        }
         else
         {
-            // We are in Sandbox -> Trigger Respawn logic here later
-            // For now, reload scene to apply change
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            Debug.LogError("No GameSession found! Did you add it to the MainMenu scene?");
         }
+
+        // 2. Load the Sandbox Scene
+        SceneManager.LoadScene("SampleScene");
     }
 
     public void OnClick_Back()

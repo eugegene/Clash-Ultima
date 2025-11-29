@@ -4,25 +4,25 @@ using System.Collections;
 public class GameLoopManager : MonoBehaviour
 {
     public static GameLoopManager Instance;
+    public MobaCamera gameCamera;
 
     [Header("Settings")]
     public Transform redSpawn;
     public Transform blueSpawn;
+
+
     public float respawnTime = 5f;
 
-    void Start() // Changed from Awake to Start to ensure GameSession is ready
+    void Start()
     {
-        // Default to existing if nothing selected (for testing)
-        UnitDefinition pick = null;
-    
+        // 1. Check if we have a choice saved
         if (GameSession.Instance != null && GameSession.Instance.SelectedCharacter != null)
         {
-            pick = GameSession.Instance.SelectedCharacter;
+            SpawnCharacter(GameSession.Instance.SelectedCharacter, Team.Blue);
         }
-
-        if (pick != null)
+        else
         {
-            SpawnCharacter(pick, Team.Blue);
+            Debug.LogWarning("No character selected! (Did you start from Main Menu?)");
         }
     }
     
@@ -69,17 +69,28 @@ public class GameLoopManager : MonoBehaviour
 
     public void SpawnCharacter(UnitDefinition def, Team team)
     {
-        // Instantiate the Prefab from the Definition
+        // 2. Determine Spawn Point
         Transform spawnPoint = (team == Team.Red) ? redSpawn : blueSpawn;
+
+        // 3. Spawn the Prefab stored in the Definition
+        if (def.prefab == null)
+        {
+            Debug.LogError($"UnitDefinition for {def.unitName} has no Prefab assigned!");
+            return;
+        }
+
         GameObject hero = Instantiate(def.prefab, spawnPoint.position, spawnPoint.rotation);
-    
-        // Initialize
+        
+        // 4. Initialize Stats
         UnitStats stats = hero.GetComponent<UnitStats>();
-        stats.definition = def; // Ensure data is injected
+        stats.definition = def;
         stats.team = team;
         stats.InitializeStats();
-    
-        // Let camera follow
-        FindObjectOfType<MobaCamera>().targetToFollow = hero.transform;
+
+        // 5. Make Camera Follow Hero
+        if (gameCamera != null)
+        {
+            gameCamera.targetToFollow = hero.transform;
+        }
     }
 }
