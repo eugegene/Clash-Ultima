@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Dummy
   m_EditorClassIdentifier: 
   unitName: Training dummy
+  verse: Misc
   icon: {fileID: 0}
+  prefab: {fileID: 0}
   maxHealth: 100
   healthRegen: 0
   resourceType: 0
