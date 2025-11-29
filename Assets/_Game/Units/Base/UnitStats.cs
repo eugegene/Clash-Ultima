@@ -21,6 +21,9 @@ public class UnitStats : MonoBehaviour
     public Stat Armor;
     public Stat MagicResist;
 
+    [Header("Identity")]
+    public Team team;
+
     // Current State
     public float CurrentHealth { get; private set; }
     public float CurrentResource { get; private set; }
