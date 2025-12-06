@@ -26,16 +26,43 @@ public class CharacterPickerUI : MonoBehaviour
     private List<CharacterGridItem> _spawnedCharacters = new List<CharacterGridItem>();
     private string _currentVerse = "";
 
-    void Start()
+    //void Start()
+    //{
+    //    PopulateVerses();
+        
+    //    // Listeners
+    //    searchInput.onValueChanged.AddListener(OnSearch);
+    //    showNamesToggle.onValueChanged.AddListener(OnToggleNames);
+        
+    //    // Select first verse by default
+    //    var verses = database.GetVerses();
+    //    if (verses.Count > 0) OnVerseSelected(verses[0]);
+    //}
+
+    // Change Start to OnEnable so it runs every time the menu opens
+    void OnEnable()
     {
+        Debug.Log("Character Picker Opened! Populating...");
+
+        if (database == null)
+        {
+            Debug.LogError("DATABASE IS MISSING!");
+            return;
+        }
+
         PopulateVerses();
         
-        // Listeners
+        // Setup Listeners (Check if already added to avoid duplicates)
+        searchInput.onValueChanged.RemoveAllListeners();
         searchInput.onValueChanged.AddListener(OnSearch);
+        
+        showNamesToggle.onValueChanged.RemoveAllListeners();
         showNamesToggle.onValueChanged.AddListener(OnToggleNames);
         
-        // Select first verse by default
+        // Select first verse
         var verses = database.GetVerses();
+        Debug.Log($"Found {verses.Count} verses in DB.");
+        
         if (verses.Count > 0) OnVerseSelected(verses[0]);
     }
 

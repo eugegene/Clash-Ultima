@@ -15,10 +15,10 @@ MonoBehaviour:
   unitName: Test Paladin
   verse: Misc
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 4925494567944679477, guid: 8547a78e6110f02499ecd121ceb4d017, type: 3}
   maxHealth: 100
   healthRegen: 1.5
-  resourceType: 0
+  resourceType: 1
   maxResource: 100
   resourceRegen: 5
   attackDamage: 50
