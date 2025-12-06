@@ -18,10 +18,15 @@ public class UnitDefinition : ScriptableObject
     public float maxResource = 100f;
     public float resourceRegen = 5f;
 
-    [Header("Offense")]
+    [Header("Offense Configuration")]
+    public AttackType attackType;       // <--- NEW
+    public GameObject projectilePrefab; // <--- NEW (For Ranged)
+    public float splashRadius = 3f;     // <--- NEW (For Splash)
+
+    [Header("Offense Stats")]
     public float attackDamage = 50f;
     public float attackRange = 5f;
-    public float attackSpeed = 1.0f; // Attacks per second
+    public float attackSpeed = 1.0f;
 
     [Header("Defense")]
     public float armor = 10f; // Physical Resist
@@ -40,4 +45,11 @@ public enum ResourceType
     Rage,
     Fury,
     CursedEnergy
+}
+
+public enum AttackType
+{
+    Touch, 
+    Projectile,
+    Splash
 }
