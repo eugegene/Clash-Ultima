@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "com.antonysze.custom-play-button": {
-      "version": "file:C:/Users/Eugen/Desktop/unity-custom-play-button-1.0",
+      "version": "file:C:/Users/Eugen/AppData/Local/Unity/unity-custom-play-button-1.0",
       "depth": 0,
       "source": "local",
       "dependencies": {}
     },
     "com.marijnzwemmer.unity-toolbar-extender": {
-      "version": "file:C:/Users/Eugen/Desktop/unity-toolbar-extender-1.4.3",
+      "version": "file:C:/Users/Eugen/AppData/Local/Unity/unity-toolbar-extender-1.4.3",
       "depth": 0,
       "source": "local",
       "dependencies": {}
