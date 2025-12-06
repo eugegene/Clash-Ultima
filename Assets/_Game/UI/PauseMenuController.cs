@@ -58,19 +58,24 @@ public class PauseMenuController : MonoBehaviour
 
     public void OpenPauseMenu()
     {
-        pausePanel.SetActive(false);
+        pausePanel.SetActive(true); 
+        
         if (pickerPanel != null) 
         {
-            pickerPanel.SetActive(true);
-            
-            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(pickerPanel.GetComponent<RectTransform>());
+            pickerPanel.SetActive(false);
         }
     }
 
     public void OpenCharacterPicker()
     {
         pausePanel.SetActive(false);
-        if (pickerPanel != null) pickerPanel.SetActive(true);
+        
+        if (pickerPanel != null) 
+        {
+            pickerPanel.SetActive(true);
+            
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(pickerPanel.GetComponent<RectTransform>());
+        }
     }
 
     public void LoadMainMenu()

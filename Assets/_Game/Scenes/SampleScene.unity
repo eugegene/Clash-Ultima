@@ -2881,8 +2881,8 @@ MonoBehaviour:
   characterContainer: {fileID: 1080929714}
   searchInput: {fileID: 663366246}
   showNamesToggle: {fileID: 1469260459}
-  verseButtonPrefab: {fileID: 618581359}
-  characterItemPrefab: {fileID: 1080929713}
+  verseButtonPrefab: {fileID: 6227281870460425732, guid: 2706c0405f79b0240b8f7d5319468f95, type: 3}
+  characterItemPrefab: {fileID: 938060454219041124, guid: 00bb8a2345e4270468999b71796bf343, type: 3}
 --- !u!224 &1265932770
 RectTransform:
   m_ObjectHideFlags: 0
