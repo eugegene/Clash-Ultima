@@ -1,67 +1,86 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem; // Needed for the Esc key
+using UnityEngine.InputSystem;
 
 public class PauseMenuController : MonoBehaviour
 {
     [Header("UI References")]
-    public GameObject pauseMenuCanvas; // Drag the Panel/Canvas here
-
-    [Header("Settings")]
-    public string mainMenuScene = "MainMenu";
+    public GameObject pausePanel;       // The black overlay with buttons
+    public GameObject pickerPanel;      // The Character Picker container
 
     private bool _isPaused = false;
 
     void Start()
     {
-        // Ensure menu is hidden and time is running when game starts
+        // Ensure everything is hidden at start
         ResumeGame();
     }
 
     void Update()
     {
-        // Check for ESC key
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            if (_isPaused) ResumeGame();
-            else PauseGame();
+            // If Picker is open, go back to Pause Menu
+            if (pickerPanel != null && pickerPanel.activeSelf)
+            {
+                OpenPauseMenu();
+            }
+            // If Game is paused, Resume
+            else if (_isPaused) 
+            {
+                ResumeGame();
+            }
+            // Otherwise, Pause
+            else 
+            {
+                PauseGame();
+            }
         }
     }
 
     public void PauseGame()
     {
         _isPaused = true;
-        pauseMenuCanvas.SetActive(true);
-        Time.timeScale = 0f; // Freeze the game
+        Time.timeScale = 0f; // Freeze Time
+        OpenPauseMenu();
     }
 
     public void ResumeGame()
     {
         _isPaused = false;
-        pauseMenuCanvas.SetActive(false);
-        Time.timeScale = 1f; // Unfreeze the game
-    }
-
-    public void OnClick_Continue()
-    {
-        ResumeGame();
-    }
-
-    public void OnClick_PickCharacter()
-    {
-        // For now, we will just reload the scene to "reset"
-        // Later, this will open a specific UI panel
-        Debug.Log("Open Character Select Logic Here");
+        Time.timeScale = 1f; // Unfreeze Time
         
-        // Optional: Reload scene to act as a "Reset"
-        Time.timeScale = 1f; 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (pausePanel != null) pausePanel.SetActive(false);
+        if (pickerPanel != null) pickerPanel.SetActive(false);
     }
 
-    public void OnClick_MainMenu()
+    // --- Navigation Methods ---
+
+    public void OpenPauseMenu()
     {
-        // IMPORTANT: Always reset time before leaving the scene!
-        Time.timeScale = 1f; 
-        SceneManager.LoadScene(mainMenuScene);
+        pausePanel.SetActive(false);
+        if (pickerPanel != null) 
+        {
+            pickerPanel.SetActive(true);
+            
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(pickerPanel.GetComponent<RectTransform>());
+        }
+    }
+
+    public void OpenCharacterPicker()
+    {
+        pausePanel.SetActive(false);
+        if (pickerPanel != null) pickerPanel.SetActive(true);
+    }
+
+    public void LoadMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }
