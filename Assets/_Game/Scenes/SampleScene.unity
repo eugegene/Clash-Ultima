@@ -1465,7 +1465,8 @@ Transform:
   m_LocalPosition: {x: 11.43, y: 2.39, z: 11.43}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 779218653}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &663366242
@@ -1988,6 +1989,59 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 776866105}
   m_CullTransparentMesh: 1
+--- !u!1 &779218651
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 779218653}
+  - component: {fileID: 779218652}
+  m_Layer: 0
+  m_Name: Red_MinionSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &779218652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779218651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c3350f73f4874841964918d6518e091, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minionData: {fileID: 11400000, guid: 677fcf74f0ebb5d459748e6ecbf8eccf, type: 2}
+  team: 1
+  spawnPoint: {fileID: 644102521}
+  spawnInterval: 5
+  minionsPerWave: 3
+  spawnOnStart: 0
+  healthMultiplier: 1
+  damageMultiplier: 1
+  aggroRangeMultiplier: 1
+--- !u!4 &779218653
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779218651}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 11.43, y: 2.39, z: 11.43}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 644102521}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &794478971 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1441250476006953524, guid: 16fe5b441b825164ba20b844546d31c3, type: 3}
