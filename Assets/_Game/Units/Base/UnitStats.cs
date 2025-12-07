@@ -90,6 +90,11 @@ public class UnitStats : MonoBehaviour
         CurrentHealth -= finalDamage;
         // Debug.Log($"{name} took {finalDamage} damage.");
         
+        if (DamageTextManager.Instance != null)
+        {
+            DamageTextManager.Instance.ShowDamage(finalDamage, transform.position);
+        }
+
         if (CurrentHealth <= 0)
         {
             CurrentHealth = 0;
