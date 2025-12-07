@@ -35,7 +35,11 @@ public class UnitAttack : MonoBehaviour
         if (attackCooldownTimer > 0) 
             attackCooldownTimer -= Time.deltaTime;
 
-        if (currentTarget == null) return;
+        if (currentTarget == null || !currentTarget.gameObject.activeInHierarchy) 
+        {
+            currentTarget = null; // Clear the target so we stop chasing ghosts
+            return;
+        }
 
         // 1. Check Distance
         float distance = Vector3.Distance(transform.position, currentTarget.transform.position);
