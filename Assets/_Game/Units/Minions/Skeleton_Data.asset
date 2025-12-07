@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8e2c04eaed2b447bb0187b0dadc81b, type: 3}
   m_Name: Skeleton_Data
   m_EditorClassIdentifier: 
-  unitName: 
-  verse: 
+  unitName: Skeleton
+  verse: Minion
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 5055205912812083620, guid: 979fdf125dfe1694ca0a37583ae8ae7e, type: 3}
   maxHealth: 25
   healthRegen: 0
   resourceType: 0
-  maxResource: 100
-  resourceRegen: 5
+  maxResource: 0
+  resourceRegen: 0
   attackType: 0
   projectilePrefab: {fileID: 0}
   splashRadius: 0
-  attackDamage: 5
-  attackRange: 5
+  attackDamage: 10
+  attackRange: 3
   attackSpeed: 1
-  armor: 10
-  magicResist: 10
-  moveSpeed: 6
+  armor: 0
+  magicResist: 0
+  moveSpeed: 3
   rotationSpeed: 20

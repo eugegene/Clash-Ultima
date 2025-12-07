@@ -3,29 +3,19 @@ using System.Collections;
 
 public class MinionSpawner : MonoBehaviour
 {
-    [Header("Configuration")]
-    public UnitDefinition minionData; // The base stats (e.g., "Skeleton")
+    [Header("Core Config")]
+    public UnitDefinition unitData; // The Body stats (Health, Dmg)
+    public AIDefinition aiData;     // The Brain stats (Multipliers, IQ) <--- NEW
     public Team team = Team.Red;
     public Transform spawnPoint;
 
     [Header("Wave Settings")]
     public float spawnInterval = 10f;
     public int minionsPerWave = 3;
-    public bool spawnOnStart = true;
-
-    [Header("Difficulty Modifiers (IQ & Stats)")]
-    [Tooltip("Multiplier for HP (e.g. 1.5 = +50% Health)")]
-    public float healthMultiplier = 1.0f; 
-    
-    [Tooltip("Multiplier for Damage")]
-    public float damageMultiplier = 1.0f;
-
-    [Tooltip("Aggro Range Modifier (Higher = Smarter/More Aggressive)")]
-    public float aggroRangeMultiplier = 1.0f;
 
     private void Start()
     {
-        if (spawnOnStart) StartCoroutine(SpawnRoutine());
+        StartCoroutine(SpawnRoutine());
     }
 
     IEnumerator SpawnRoutine()
@@ -35,7 +25,7 @@ public class MinionSpawner : MonoBehaviour
             for (int i = 0; i < minionsPerWave; i++)
             {
                 SpawnMinion();
-                yield return new WaitForSeconds(0.5f); // Stagger spawns slightly
+                yield return new WaitForSeconds(0.5f);
             }
             yield return new WaitForSeconds(spawnInterval);
         }
@@ -43,35 +33,47 @@ public class MinionSpawner : MonoBehaviour
 
     public void SpawnMinion()
     {
-        if (minionData == null || minionData.prefab == null) return;
+        if (unitData == null || unitData.prefab == null) 
+        {
+            Debug.LogError("MinionSpawner: Missing UnitData or Prefab!");
+            return;
+        }
 
         // 1. Spawn
-        GameObject minionObj = Instantiate(minionData.prefab, spawnPoint.position, spawnPoint.rotation);
+        GameObject minion = Instantiate(unitData.prefab, spawnPoint.position, spawnPoint.rotation);
         
-        // 2. Setup Stats
-        UnitStats stats = minionObj.GetComponent<UnitStats>();
-        stats.definition = minionData;
+        // 2. Initialize Stats
+        UnitStats stats = minion.GetComponent<UnitStats>();
+        stats.definition = unitData;
         stats.team = team;
         stats.InitializeStats();
 
-        // 3. Apply Difficulty Modifiers (Using your Stat System!)
-        if (healthMultiplier != 1.0f)
+        // 3. Apply AI Modifiers (The Magic Part)
+        if (aiData != null)
         {
-            // Add a percentage modifier (e.g., 1.5 becomes +0.5 or +50%)
-            stats.MaxHealth.AddModifier(new StatModifier(healthMultiplier - 1f, StatModType.PercentAdd, this));
-            stats.ModifyHealth(9999); // Heal to new max
+            ApplyAIModifiers(stats);
+            
+            // Attach the AI Brain (We will write this next)
+            // minion.AddComponent<MinionAI>().Initialize(aiData); 
+        }
+    }
+
+    private void ApplyAIModifiers(UnitStats stats)
+    {
+        // Add difficulty stats ON TOP of base stats
+        if (aiData.healthMod != 1f)
+        {
+            float bonus = stats.MaxHealth.BaseValue * (aiData.healthMod - 1f);
+            stats.MaxHealth.AddModifier(new StatModifier(bonus, StatModType.Flat, this));
+            stats.ModifyHealth(bonus); // Heal the bonus amount
         }
 
-        if (damageMultiplier != 1.0f)
+        if (aiData.damageMod != 1f)
         {
-            stats.AttackDamage.AddModifier(new StatModifier(damageMultiplier - 1f, StatModType.PercentAdd, this));
+            float bonus = stats.AttackDamage.BaseValue * (aiData.damageMod - 1f);
+            stats.AttackDamage.AddModifier(new StatModifier(bonus, StatModType.Flat, this));
         }
-
-        // 4. Apply "IQ" (Aggro Range)
-        // We modify the AttackRange stat, allowing them to "see" targets from further away
-        if (aggroRangeMultiplier != 1.0f)
-        {
-            stats.AttackRange.AddModifier(new StatModifier(aggroRangeMultiplier - 1f, StatModType.PercentAdd, this));
-        }
+        
+        // You can add Speed, Armor, etc. here
     }
 }
