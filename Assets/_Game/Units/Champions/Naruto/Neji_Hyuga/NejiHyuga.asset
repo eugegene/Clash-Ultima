@@ -15,7 +15,7 @@ MonoBehaviour:
   unitName: Neji Hyuga
   verse: Naruto
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 8255297398781564474, guid: d5f671c864981b54aa807bf3562a303c, type: 3}
   maxHealth: 100
   healthRegen: 1.5
   resourceType: 1
@@ -25,8 +25,8 @@ MonoBehaviour:
   projectilePrefab: {fileID: 0}
   splashRadius: 3
   attackDamage: 5
-  attackRange: 3
-  attackSpeed: 3
+  attackRange: 2
+  attackSpeed: 2.5
   armor: 10
   magicResist: 10
   moveSpeed: 6
