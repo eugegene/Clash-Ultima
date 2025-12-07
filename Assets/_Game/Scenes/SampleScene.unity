@@ -1431,7 +1431,7 @@ Transform:
   m_GameObject: {fileID: 628174014}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.71, y: 2.39, z: -12.02}
+  m_LocalPosition: {x: 1.72, y: 2.39, z: -1.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2022,8 +2022,8 @@ MonoBehaviour:
   aiData: {fileID: 11400000, guid: 6408fb8351e44b845a1eea1a1779bebe, type: 2}
   team: 1
   spawnPoint: {fileID: 644102521}
-  spawnInterval: 10
-  minionsPerWave: 1
+  spawnInterval: 30
+  minionsPerWave: 2
 --- !u!4 &779218653
 Transform:
   m_ObjectHideFlags: 0
