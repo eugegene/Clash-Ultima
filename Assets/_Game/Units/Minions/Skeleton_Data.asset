@@ -15,7 +15,7 @@ MonoBehaviour:
   unitName: Skeleton
   verse: Minion
   icon: {fileID: 0}
-  prefab: {fileID: 5055205912812083620, guid: 979fdf125dfe1694ca0a37583ae8ae7e, type: 3}
+  prefab: {fileID: 6692912700857998398, guid: b922de9aee7c51441b7c6cbf5a8348c7, type: 3}
   maxHealth: 25
   healthRegen: 0
   resourceType: 0

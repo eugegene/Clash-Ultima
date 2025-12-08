@@ -16,20 +16,20 @@ MonoBehaviour:
   verse: Test
   icon: {fileID: 0}
   prefab: {fileID: 4765726255092384447, guid: aedf4eacdf258e249a4c86c383d71a0c, type: 3}
-  maxHealth: 100
+  maxHealth: 50
   healthRegen: 1.5
   resourceType: 5
   maxResource: 100
   resourceRegen: 5
   attackType: 0
   projectilePrefab: {fileID: 0}
-  splashRadius: 3
+  splashRadius: 0
   attackDamage: 50
-  attackRange: 5
+  attackRange: 2
   attackSpeed: 1
-  critChance: 0
+  critChance: 50
   critDamage: 2
-  armor: 10
-  magicResist: 10
-  moveSpeed: 6
+  armor: 0
+  magicResist: 0
+  moveSpeed: 20
   rotationSpeed: 20

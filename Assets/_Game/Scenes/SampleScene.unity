@@ -1801,7 +1801,7 @@ MonoBehaviour:
     m_Bits: 1
   unitLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 64
 --- !u!4 &861909172
 Transform:
   m_ObjectHideFlags: 0
@@ -3590,7 +3590,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1516356807}
   m_HandleRect: {fileID: 1516356806}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
