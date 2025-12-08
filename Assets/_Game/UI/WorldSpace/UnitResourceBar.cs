@@ -54,13 +54,9 @@ public class UnitResourceBar : MonoBehaviour
 
     void LateUpdate()
     {
-        if (targetUnit == null) return;
+        transform.rotation = Quaternion.identity;
 
-        // Billboarding
-        if (canvas != null && _cam != null)
-        {
-            canvas.transform.rotation = _cam.transform.rotation;
-        }
+        if (targetUnit == null) return;
 
         // Update Fill
         if (fillImage != null)

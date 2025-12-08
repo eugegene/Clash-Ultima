@@ -42,12 +42,5 @@ public class UnitHealthBar : MonoBehaviour
             float pct = targetUnit.CurrentHealth / targetUnit.MaxHealth.Value;
             fillImage.fillAmount = pct;
         }
-
-        // 2. Billboarding (Always face camera)
-        // We do this in LateUpdate so it doesn't jitter when the camera moves
-        if (canvas != null && _cam != null)
-        {
-            canvas.transform.rotation = _cam.transform.rotation;
-        }
     }
 }
