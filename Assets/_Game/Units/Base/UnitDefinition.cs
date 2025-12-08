@@ -28,6 +28,9 @@ public class UnitDefinition : ScriptableObject
     public float attackRange = 5f;
     public float attackSpeed = 1.0f;
 
+    [Range(0, 100)] public float critChance = 0f;   // 0% to 100%
+    public float critDamage = 2.0f;                 // 2.0 = 200% Damage
+
     [Header("Defense")]
     public float armor = 10f; // Physical Resist
     public float magicResist = 10f; // Magical Resist

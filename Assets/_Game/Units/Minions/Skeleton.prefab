@@ -142,13 +142,17 @@ MonoBehaviour:
     _baseValue: 0
   AttackSpeed:
     _baseValue: 0
+  CritChance:
+    _baseValue: 0
+  CritDamage:
+    _baseValue: 0
   MoveSpeed:
     _baseValue: 0
   Armor:
     _baseValue: 0
   MagicResist:
     _baseValue: 0
-  team: 1
+  team: 0
 --- !u!195 &627072498889369143
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -158,7 +162,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 5055205912812083620}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 1
+  m_Radius: 0.5
   m_Speed: 3.5
   m_Acceleration: 100
   avoidancePriority: 50

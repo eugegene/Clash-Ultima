@@ -21,12 +21,14 @@ MonoBehaviour:
   resourceType: 0
   maxResource: 0
   resourceRegen: 0
-  attackType: 0
-  projectilePrefab: {fileID: 0}
+  attackType: 1
+  projectilePrefab: {fileID: 5055205912812083620, guid: 979fdf125dfe1694ca0a37583ae8ae7e, type: 3}
   splashRadius: 0
-  attackDamage: 10
-  attackRange: 5
+  attackDamage: 5
+  attackRange: 50
   attackSpeed: 1
+  critChance: 0
+  critDamage: 2
   armor: 0
   magicResist: 0
   moveSpeed: 3

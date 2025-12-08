@@ -18,7 +18,7 @@ MonoBehaviour:
   prefab: {fileID: 8255297398781564474, guid: d5f671c864981b54aa807bf3562a303c, type: 3}
   maxHealth: 100
   healthRegen: 1.5
-  resourceType: 1
+  resourceType: 0
   maxResource: 100
   resourceRegen: 5
   attackType: 0
@@ -27,6 +27,8 @@ MonoBehaviour:
   attackDamage: 5
   attackRange: 2
   attackSpeed: 2.5
+  critChance: 0
+  critDamage: 2
   armor: 10
   magicResist: 10
   moveSpeed: 6

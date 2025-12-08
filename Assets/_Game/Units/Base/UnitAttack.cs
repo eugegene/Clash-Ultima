@@ -119,27 +119,40 @@ public class UnitAttack : MonoBehaviour
         currentTarget = null;
     }
 
+private float GetDamage()
+    {
+        float damage = _stats.AttackDamage.Value;
+        
+        // Roll for Crit
+        // Random.value returns 0.0 to 1.0. We divide chance by 100.
+        if (Random.value < (_stats.CritChance.Value / 100f))
+        {
+            damage *= _stats.CritDamage.Value;
+            Debug.Log("CRITICAL HIT!"); 
+            // Optional: You can send a "IsCrit" bool in the DamageMessage later
+        }
+        
+        return damage;
+    }
+
     private void DoMeleeAttack()
     {
-        // Simple direct damage
-        DamageMessage msg = new DamageMessage(_stats.AttackDamage.Value, DamageType.Physical, gameObject);
+        // Use the helper
+        DamageMessage msg = new DamageMessage(GetDamage(), DamageType.Physical, gameObject);
         currentTarget.TakeDamage(msg);
     }
 
     private void DoRangedAttack()
     {
         if (_stats.definition.projectilePrefab == null) return;
-
-        // Spawn Projectile
         GameObject proj = Instantiate(_stats.definition.projectilePrefab, transform.position + Vector3.up, Quaternion.identity);
-        
-        // Setup Projectile
         SimpleProjectile pScript = proj.GetComponent<SimpleProjectile>();
+        
         if (pScript != null)
         {
             Vector3 dir = (currentTarget.transform.position - transform.position).normalized;
-            // Use 20f as default speed if not defined, or add projectileSpeed to Definition later
-            pScript.Initialize(dir, 20f, _stats.AttackDamage.Value, gameObject);
+            // Use the helper
+            pScript.Initialize(dir, 20f, GetDamage(), gameObject);
         }
     }
 

@@ -21,9 +21,14 @@ MonoBehaviour:
   resourceType: 5
   maxResource: 100
   resourceRegen: 5
+  attackType: 0
+  projectilePrefab: {fileID: 0}
+  splashRadius: 3
   attackDamage: 15
   attackRange: 3
   attackSpeed: 1
+  critChance: 50
+  critDamage: 1.5
   armor: 10
   magicResist: 10
   moveSpeed: 6

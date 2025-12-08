@@ -16,7 +16,9 @@ public class UnitStats : MonoBehaviour
     // --- NEW STATS ADDED HERE ---
     public Stat AttackDamage;
     public Stat AttackRange;
-    public Stat AttackSpeed; // Attacks per second
+    public Stat AttackSpeed;
+    public Stat CritChance; 
+    public Stat CritDamage;
     // ----------------------------
 
     public Stat MoveSpeed;
@@ -50,6 +52,8 @@ public class UnitStats : MonoBehaviour
         AttackDamage = new Stat(definition.attackDamage);
         AttackRange = new Stat(definition.attackRange);
         AttackSpeed = new Stat(definition.attackSpeed);
+        CritChance = new Stat(definition.critChance);
+        CritDamage = new Stat(definition.critDamage);
         // ----------------------
 
         MoveSpeed = new Stat(definition.moveSpeed);
