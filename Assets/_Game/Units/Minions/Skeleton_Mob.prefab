@@ -60,6 +60,10 @@ PrefabInstance:
       propertyPath: m_IsKinematic
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4863972837665800578, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
+      propertyPath: m_AutoBraking
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6134902148613707351, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
       propertyPath: team
       value: 0

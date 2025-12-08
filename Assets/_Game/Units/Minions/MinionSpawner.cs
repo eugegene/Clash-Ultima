@@ -54,7 +54,7 @@ public class MinionSpawner : MonoBehaviour
             ApplyAIModifiers(stats);
             
             // Attach the AI Brain (We will write this next)
-            // minion.AddComponent<MinionAI>().Initialize(aiData); 
+            minion.AddComponent<MinionAI>().Initialize(aiData); 
         }
     }
 

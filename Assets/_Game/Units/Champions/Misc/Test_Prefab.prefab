@@ -72,6 +72,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4863972837665800578, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
+      propertyPath: m_AutoBraking
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5939186020141162615, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
       propertyPath: m_Layer
       value: 6

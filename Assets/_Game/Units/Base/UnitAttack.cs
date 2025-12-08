@@ -138,7 +138,7 @@ public class UnitAttack : MonoBehaviour
         
         // Pass the bool into the message
         DamageMessage msg = new DamageMessage(dmg, DamageType.Physical, gameObject, isCrit);
-        //currentTarget.TakeDamage(msg);
+        currentTarget.TakeDamage(msg);
     }
 
     private void DoRangedAttack()
