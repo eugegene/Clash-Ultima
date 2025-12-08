@@ -66,27 +66,19 @@ public class UnitAttack : MonoBehaviour
     private void PerformAttack()
     {
         attackCooldownTimer = 1f / _stats.AttackSpeed.Value;
-        DamageMessage msg = new DamageMessage
+
+        switch (_stats.definition.attackType)
         {
-            Amount = _stats.AttackDamage.Value,
-            Type = DamageType.Physical,
-            Source = gameObject
-        };
-
-                switch (_stats.definition.attackType)
-                {
-                    case AttackType.Touch:
-                        DoMeleeAttack();
-                        break;
-                    case AttackType.Projectile:
-                        DoRangedAttack();
-                        break;
-                    case AttackType.Splash:
-                        DoSplashAttack();
-                        break;
-                }
-
-        currentTarget.TakeDamage(msg);
+            case AttackType.Touch:
+                DoMeleeAttack();
+                break;
+            case AttackType.Projectile:
+                DoRangedAttack();
+                break;
+            case AttackType.Splash:
+                DoSplashAttack();
+                break;
+        }
 
         Debug.Log($"Attacked {currentTarget.name}!");
     }
@@ -119,55 +111,67 @@ public class UnitAttack : MonoBehaviour
         currentTarget = null;
     }
 
-private float GetDamage()
+    private float GetDamage(out bool isCrit) // Update helper to return bool
     {
         float damage = _stats.AttackDamage.Value;
-        
-        // Roll for Crit
-        // Random.value returns 0.0 to 1.0. We divide chance by 100.
+        isCrit = false;
+
         if (Random.value < (_stats.CritChance.Value / 100f))
         {
             damage *= _stats.CritDamage.Value;
-            Debug.Log("CRITICAL HIT!"); 
-            // Optional: You can send a "IsCrit" bool in the DamageMessage later
+            isCrit = true; // We crit!
         }
-        
         return damage;
     }
 
     private void DoMeleeAttack()
     {
-        // Use the helper
-        DamageMessage msg = new DamageMessage(GetDamage(), DamageType.Physical, gameObject);
+        bool isCrit;
+        float dmg = GetDamage(out isCrit);
+        
+        // Pass the bool into the message
+        DamageMessage msg = new DamageMessage(dmg, DamageType.Physical, gameObject, isCrit);
         currentTarget.TakeDamage(msg);
     }
 
     private void DoRangedAttack()
     {
         if (_stats.definition.projectilePrefab == null) return;
+
         GameObject proj = Instantiate(_stats.definition.projectilePrefab, transform.position + Vector3.up, Quaternion.identity);
         SimpleProjectile pScript = proj.GetComponent<SimpleProjectile>();
         
         if (pScript != null)
         {
             Vector3 dir = (currentTarget.transform.position - transform.position).normalized;
-            // Use the helper
-            pScript.Initialize(dir, 20f, GetDamage(), gameObject);
+            
+            // 1. Calculate Damage & Crit Status
+            bool isCrit;
+            float damage = GetDamage(out isCrit); 
+
+            // 2. Pass BOTH to the projectile
+            // (Note: You need to update SimpleProjectile.Initialize to accept 'bool isCrit')
+            pScript.Initialize(dir, 20f, damage, gameObject, isCrit);
         }
     }
 
     private void DoSplashAttack()
     {
-        // Boom! Damage everyone near the target
         Collider[] hits = Physics.OverlapSphere(currentTarget.transform.position, _stats.definition.splashRadius);
         
+        // 1. Roll for Crit ONCE for the explosion 
+        // (Or move this inside the loop if you want to roll for each enemy individually)
+        bool isCrit;
+        float damage = GetDamage(out isCrit);
+
         foreach (var hit in hits)
         {
             UnitStats victim = hit.GetComponent<UnitStats>();
-            // Check: Exists, Not Me, Is Enemy
+            
             if (victim != null && victim != _stats && TeamLogic.IsEnemy(_stats.team, victim.team))
             {
-                DamageMessage msg = new DamageMessage(_stats.AttackDamage.Value, DamageType.Fire, gameObject);
+                // 2. Use the calculated damage and IsCrit flag
+                DamageMessage msg = new DamageMessage(damage, DamageType.Fire, gameObject, isCrit);
                 victim.TakeDamage(msg);
             }
         }

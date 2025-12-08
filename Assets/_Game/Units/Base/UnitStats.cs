@@ -96,7 +96,8 @@ public class UnitStats : MonoBehaviour
         
         if (DamageTextManager.Instance != null)
         {
-            DamageTextManager.Instance.ShowDamage(finalDamage, transform.position);
+            // Pass the IsCrit flag to the UI
+            DamageTextManager.Instance.ShowDamage(finalDamage, transform.position, msg.IsCrit);
         }
 
         if (CurrentHealth <= 0)

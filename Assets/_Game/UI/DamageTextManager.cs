@@ -8,20 +8,25 @@ public class DamageTextManager : MonoBehaviour
 
     void Awake() { Instance = this; }
 
-    public void ShowDamage(float amount, Vector3 position)
+    public void ShowDamage(float amount, Vector3 position, bool isCrit = false) 
     {
         if (textPrefab == null || worldCanvas == null) return;
 
-        // Spawn inside the canvas
         GameObject textObj = Instantiate(textPrefab, worldCanvas.transform);
-        
-        // Position it slightly above the unit
         textObj.transform.position = position + Vector3.up * 2f;
         
-        // Setup
-        textObj.GetComponent<FloatingText>().Setup(amount);
-        
-        // Make it face the camera
+        // Get the script
+        FloatingText ft = textObj.GetComponent<FloatingText>();
+        ft.Setup(amount);
+
+        // --- NEW VISUAL LOGIC ---
+        if (isCrit)
+        {
+            ft.GetComponent<TMPro.TextMeshProUGUI>().color = Color.yellow; // Make crits Yellow!
+            textObj.transform.localScale *= 1.5f; // Make them BIG!
+        }
+        // ------------------------
+
         textObj.transform.rotation = Camera.main.transform.rotation;
     }
 }

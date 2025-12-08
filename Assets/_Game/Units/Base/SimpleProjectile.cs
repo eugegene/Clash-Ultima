@@ -6,13 +6,15 @@ public class SimpleProjectile : MonoBehaviour
     private float _speed;
     private float _damage;
     private GameObject _owner;
+    private bool _isCrit;
 
-    public void Initialize(Vector3 dir, float speed, float damage, GameObject owner)
+    public void Initialize(Vector3 dir, float speed, float damage, GameObject owner, bool isCrit)
     {
         _direction = dir;
         _speed = speed;
         _damage = damage;
         _owner = owner;
+        _isCrit = isCrit;
         Destroy(gameObject, 5f); // Safety destroy
     }
 
@@ -28,10 +30,7 @@ public class SimpleProjectile : MonoBehaviour
         UnitStats targetStats = other.GetComponent<UnitStats>();
         if (targetStats != null)
         {
-            // NEW: Create a Message Packet
-            DamageMessage msg = new DamageMessage(_damage, DamageType.Magical, _owner);
-            
-            // Send it
+            DamageMessage msg = new DamageMessage(_damage, DamageType.Magical, _owner, _isCrit);
             targetStats.TakeDamage(msg);
             
             Destroy(gameObject);
