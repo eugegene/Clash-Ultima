@@ -29,25 +29,31 @@ public class UnitAttack : MonoBehaviour
         InputHandler.OnMoveCommand -= OnMoveCommandReceived;
     }
 
+    // Add a state variable to track what we are doing
+    private bool _isAttacking = false;
+
     void Update()
     {
-        // Reduce Cooldown
         if (attackCooldownTimer > 0) 
             attackCooldownTimer -= Time.deltaTime;
 
         if (currentTarget == null || !currentTarget.gameObject.activeInHierarchy) 
         {
-            currentTarget = null; // Clear the target so we stop chasing ghosts
+            currentTarget = null;
             return;
         }
 
-        // 1. Check Distance
         float distance = Vector3.Distance(transform.position, currentTarget.transform.position);
         float range = _stats.AttackRange.Value;
 
-        if (distance <= range)
+        // --- NEW LOGIC: BUFFER ZONE ---
+        // If we are already attacking, allow the enemy to be 20% further away before we chase them
+        float stopChaseDistance = _isAttacking ? (range * 1.2f) : range;
+
+        if (distance <= stopChaseDistance)
         {
-            // In Range: Attack!
+            // We are close enough to fight
+            _isAttacking = true;
             _motor.StopMoving();
             FaceTarget();
             
@@ -58,7 +64,8 @@ public class UnitAttack : MonoBehaviour
         }
         else
         {
-            // Out of Range: Chase!
+            // Target is too far, start chasing
+            _isAttacking = false;
             _motor.MoveToPoint(currentTarget.transform.position);
         }
     }
@@ -131,7 +138,7 @@ public class UnitAttack : MonoBehaviour
         
         // Pass the bool into the message
         DamageMessage msg = new DamageMessage(dmg, DamageType.Physical, gameObject, isCrit);
-        currentTarget.TakeDamage(msg);
+        //currentTarget.TakeDamage(msg);
     }
 
     private void DoRangedAttack()

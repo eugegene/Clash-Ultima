@@ -7,6 +7,7 @@ public class UnitMotor : MonoBehaviour
 {
     private NavMeshAgent _agent;
     private UnitStats _stats;
+    private Vector3 _lastDestination;
     public bool IsSelected = true; // Made public for debug
 
     void Awake()
@@ -43,7 +44,13 @@ public class UnitMotor : MonoBehaviour
     public void MoveToPoint(Vector3 point)
     {
         _agent.isStopped = false;
-        _agent.SetDestination(point);
+
+        // Optimization: Only calculate path if the target moved more than 0.1m
+        if (Vector3.Distance(point, _lastDestination) > 0.1f)
+        {
+            _agent.SetDestination(point);
+            _lastDestination = point;
+        }
     }
 
     public void StopMoving()
