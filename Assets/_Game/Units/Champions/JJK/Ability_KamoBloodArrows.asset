@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b45839637ff14614c8bf2c93e7ea5067, type: 3}
   m_Name: Ability_KamoBloodArrows
   m_EditorClassIdentifier: 
-  abilityName: 
+  abilityName: Kamo Blood Arrows
   icon: {fileID: 0}
   description: 
   manaCost: 0
-  cooldown: 0
-  castRange: 0
+  cooldown: 2
+  castRange: 3
   targetingMode: 0

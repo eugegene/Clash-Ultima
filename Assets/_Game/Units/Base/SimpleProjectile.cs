@@ -8,7 +8,6 @@ public class SimpleProjectile : MonoBehaviour
     private GameObject _owner;
     private bool _isCrit;
     
-    // --- NEW: Homing Support ---
     private UnitStats _homingTarget;
 
     public void Initialize(Vector3 dir, float speed, float damage, GameObject owner, bool isCrit)
@@ -18,6 +17,11 @@ public class SimpleProjectile : MonoBehaviour
         _damage = damage;
         _owner = owner;
         _isCrit = isCrit;
+        
+        // FIX: Rotate immediately to face direction
+        if (_direction != Vector3.zero) 
+            transform.rotation = Quaternion.LookRotation(_direction);
+
         Destroy(gameObject, 5f);
     }
 
@@ -26,17 +30,20 @@ public class SimpleProjectile : MonoBehaviour
         _homingTarget = target;
     }
 
+    public void SetDamage(float amount)
+    {
+        _damage = amount;
+    }
+
     void Update()
     {
-        // If Homing, adjust direction to face target
-        if (_homingTarget != null)
+        if (_homingTarget != null && _homingTarget.transform != null)
         {
-            // Aim at chest, not feet
             Vector3 targetCenter = _homingTarget.transform.position + Vector3.up;
             _direction = (targetCenter - transform.position).normalized;
             
-            // Optional: Rotate the visual arrow to face the target
-            transform.rotation = Quaternion.LookRotation(_direction);
+            if (_direction != Vector3.zero)
+                transform.rotation = Quaternion.LookRotation(_direction);
         }
 
         transform.Translate(_direction * _speed * Time.deltaTime, Space.World);
@@ -44,15 +51,21 @@ public class SimpleProjectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        // 1. Ignore Shooter & Triggers
         if (other.gameObject == _owner) return;
-        if (other.isTrigger) return;
+        if (other.isTrigger) return; 
 
+        // 2. CRITICAL FIX: Look in PARENT for stats (Handles hitting limbs/armor)
         UnitStats targetStats = other.GetComponentInParent<UnitStats>();
+        
         if (targetStats != null)
         {
             DamageMessage msg = new DamageMessage(_damage, DamageType.Magical, _owner, _isCrit);
             targetStats.TakeDamage(msg);
         }
+
+        // 3. CRITICAL FIX: Destroy is OUTSIDE the if statement.
+        // This ensures the arrow is destroyed even if it hits a wall or a part of the enemy that returns null stats.
         Destroy(gameObject);
     }
 }

@@ -21,11 +21,11 @@ MonoBehaviour:
   resourceType: 5
   maxResource: 100
   resourceRegen: 5
-  attackType: 0
-  projectilePrefab: {fileID: 0}
-  splashRadius: 3
-  attackDamage: 50
-  attackRange: 5
+  attackType: 1
+  projectilePrefab: {fileID: 2384411813088257935, guid: fb115978258e35d4cb038063dcbe587f, type: 3}
+  splashRadius: 0
+  attackDamage: 20
+  attackRange: 15
   attackSpeed: 1
   critChance: 0
   critDamage: 2

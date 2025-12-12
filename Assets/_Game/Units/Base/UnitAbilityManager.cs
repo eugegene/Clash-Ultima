@@ -91,18 +91,27 @@ public class UnitAbilityManager : MonoBehaviour
             Debug.Log("Ability on Cooldown!");
             return;
         }
+        
+        // --- FIX: Check for Instant Cast ---
+        if (ability.targetingMode == TargetingMode.NoTarget)
+        {
+            // Cast immediately without entering aiming mode
+            ExecuteCast(ability); 
+            return;
+        }
+        // -----------------------------------
+
         if (_stats.CurrentResource < ability.manaCost)
         {
-            Debug.Log("Not enough Mana!");
+            Debug.Log("Not enough Resource!");
             return;
         }
 
         // Enter "Aiming Mode"
         _pendingAbility = ability;
         
-        // Show indicator
         _rangeIndicator.SetActive(true);
-        float size = ability.castRange * 2; // Radius to Diameter
+        float size = ability.castRange * 2; 
         _rangeIndicator.transform.localScale = new Vector3(size, 0.1f, size);
     }
 

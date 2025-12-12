@@ -96,6 +96,12 @@ public class UnitStats : MonoBehaviour
         if (CurrentHealth <= 0) Die();
     }
 
+    public void ModifyResource(float amount)
+    {
+        CurrentResource += amount;
+        CurrentResource = Mathf.Clamp(CurrentResource, 0, MaxResource.Value);
+    }
+
     public void TakeDamage(DamageMessage msg)
     {
         float finalDamage = DamageProcessor.CalculateFinalDamage(this, msg);
