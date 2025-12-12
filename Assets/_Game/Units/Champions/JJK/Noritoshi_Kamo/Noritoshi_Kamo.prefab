@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3970822839783397441, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
+      propertyPath: abilityQ
+      value: 
+      objectReference: {fileID: 11400000, guid: 2aa0d5595014f6a4a9a6a1ab75898416, type: 2}
     - target: {fileID: 3786533422441437921, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -50,10 +54,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4175259098626094409, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
       propertyPath: m_Name
-      value: UNIT_TEMPLATE
+      value: Noritoshi_Kamo
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4175259098626094409, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7876331330798270598}
   m_SourcePrefab: {fileID: 100100000, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
+--- !u!1 &3891700595563466083 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4175259098626094409, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
+  m_PrefabInstance: {fileID: 1149430648745752618}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7876331330798270598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3891700595563466083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09bcbb5f544c3344c8d26ecdeb72a753, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthCost: 10
+  bonusDamage: 15
+  isBloodArrowsActive: 0

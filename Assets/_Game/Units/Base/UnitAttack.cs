@@ -4,6 +4,8 @@
 [RequireComponent(typeof(UnitMotor))]
 public class UnitAttack : MonoBehaviour
 {
+    public event System.Action<SimpleProjectile> OnProjectileLaunched;
+
     private UnitStats _stats;
     private UnitMotor _motor;
     
@@ -145,23 +147,21 @@ public class UnitAttack : MonoBehaviour
     {
         if (_stats.definition.projectilePrefab == null) return;
 
-        // Spawn at My Chest Height (Position + Up)
         Vector3 spawnPos = transform.position + Vector3.up;
         GameObject proj = Instantiate(_stats.definition.projectilePrefab, spawnPos, Quaternion.identity);
-        
         SimpleProjectile pScript = proj.GetComponent<SimpleProjectile>();
         
         if (pScript != null)
         {
-            // FIX: Aim at the Target's Chest, not their feet
             Vector3 targetCenter = currentTarget.transform.position + Vector3.up; 
-            
             Vector3 dir = (targetCenter - spawnPos).normalized;
-            
             bool isCrit;
             float damage = GetDamage(out isCrit); 
 
             pScript.Initialize(dir, 20f, damage, gameObject, isCrit);
+            
+            // --- TRIGGER EVENT ---
+            OnProjectileLaunched?.Invoke(pScript);
         }
     }
 

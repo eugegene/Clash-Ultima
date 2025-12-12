@@ -19,9 +19,8 @@ public class UnitInventory : MonoBehaviour
 
     void Update()
     {
-        // Simple Input for now (D and F)
-        if (Keyboard.current.dKey.wasPressedThisFrame) UseItem(0);
-        if (Keyboard.current.fKey.wasPressedThisFrame) UseItem(1);
+        if (Keyboard.current.hKey.wasPressedThisFrame) UseItem(0);
+        if (Keyboard.current.jKey.wasPressedThisFrame) UseItem(1);
     }
 
     public void AddItem(ItemDefinition item, int amount)

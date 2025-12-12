@@ -7,6 +7,9 @@ public class SimpleProjectile : MonoBehaviour
     private float _damage;
     private GameObject _owner;
     private bool _isCrit;
+    
+    // --- NEW: Homing Support ---
+    private UnitStats _homingTarget;
 
     public void Initialize(Vector3 dir, float speed, float damage, GameObject owner, bool isCrit)
     {
@@ -15,33 +18,41 @@ public class SimpleProjectile : MonoBehaviour
         _damage = damage;
         _owner = owner;
         _isCrit = isCrit;
-        Destroy(gameObject, 5f); // Safety timer
+        Destroy(gameObject, 5f);
+    }
+
+    public void SetHomingTarget(UnitStats target)
+    {
+        _homingTarget = target;
     }
 
     void Update()
     {
+        // If Homing, adjust direction to face target
+        if (_homingTarget != null)
+        {
+            // Aim at chest, not feet
+            Vector3 targetCenter = _homingTarget.transform.position + Vector3.up;
+            _direction = (targetCenter - transform.position).normalized;
+            
+            // Optional: Rotate the visual arrow to face the target
+            transform.rotation = Quaternion.LookRotation(_direction);
+        }
+
         transform.Translate(_direction * _speed * Time.deltaTime, Space.World);
     }
 
     void OnTriggerEnter(Collider other)
     {
-        // 1. Ignore the shooter (prevent shooting yourself)
-        if (other.gameObject == _owner) return; 
-
-        // 2. Ignore other "Trigger" colliders (like Aggro Ranges) so we don't explode on invisible spheres
+        if (other.gameObject == _owner) return;
         if (other.isTrigger) return;
 
-        // 3. FIX: Use GetComponentInParent to find stats even if we hit a limb/child collider
         UnitStats targetStats = other.GetComponentInParent<UnitStats>();
-        
         if (targetStats != null)
         {
-            // Deal Damage
             DamageMessage msg = new DamageMessage(_damage, DamageType.Magical, _owner, _isCrit);
             targetStats.TakeDamage(msg);
         }
-
-        // 4. FIX: Destroy on ANY impact (Walls, Ground, Enemies), not just valid targets
         Destroy(gameObject);
     }
 }
