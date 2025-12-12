@@ -1,28 +1,51 @@
+// SimpleProjectile.cs
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(Rigidbody))]
 public class SimpleProjectile : MonoBehaviour
 {
-    private Vector3 _direction;
-    private float _speed;
-    private float _damage;
-    private GameObject _owner;
-    private bool _isCrit;
-    
-    private UnitStats _homingTarget;
+    // Public read-only for external systems (KamoController)
+    public float BaseDamage { get; private set; }
+    public bool IsCrit { get; private set; }
 
+    [SerializeField] private float _speed = 20f;
+    [SerializeField] private float _lifeTime = 5f;
+    [SerializeField] private float _proximityDestroy = 0.25f; // kills if close but didn't collide
+
+    private Vector3 _direction;
+    private GameObject _owner;
+    private UnitStats _homingTarget;
+    private Rigidbody _rb;
+    private float _spawnTime;
+
+    void Awake()
+    {
+        _rb = GetComponent<Rigidbody>();
+        if (_rb == null) _rb = gameObject.AddComponent<Rigidbody>();
+        _rb.isKinematic = true;
+        _rb.useGravity = false;
+
+        Collider col = GetComponent<Collider>();
+        if (col == null) col = gameObject.AddComponent<SphereCollider>();
+        col.isTrigger = true;
+
+        _spawnTime = Time.time;
+    }
+
+    /// <summary>
+    /// Initialize projectile. dir should be normalized.
+    /// </summary>
     public void Initialize(Vector3 dir, float speed, float damage, GameObject owner, bool isCrit)
     {
-        _direction = dir;
+        _direction = dir.normalized;
         _speed = speed;
-        _damage = damage;
+        BaseDamage = damage;
+        IsCrit = isCrit;
         _owner = owner;
-        _isCrit = isCrit;
-        
-        // FIX: Rotate immediately to face direction
-        if (_direction != Vector3.zero) 
-            transform.rotation = Quaternion.LookRotation(_direction);
 
-        Destroy(gameObject, 5f);
+        if (_direction != Vector3.zero)
+            transform.rotation = Quaternion.LookRotation(_direction);
     }
 
     public void SetHomingTarget(UnitStats target)
@@ -30,42 +53,105 @@ public class SimpleProjectile : MonoBehaviour
         _homingTarget = target;
     }
 
+    /// <summary>
+    /// Overwrite damage entirely (used sparingly). Prefer to use BaseDamage when adding bonuses.
+    /// </summary>
     public void SetDamage(float amount)
     {
-        _damage = amount;
+        BaseDamage = amount;
     }
 
     void Update()
     {
-        if (_homingTarget != null && _homingTarget.transform != null)
+        // Lifetime guard
+        if (Time.time - _spawnTime >= _lifeTime)
         {
-            Vector3 targetCenter = _homingTarget.transform.position + Vector3.up;
-            _direction = (targetCenter - transform.position).normalized;
-            
-            if (_direction != Vector3.zero)
-                transform.rotation = Quaternion.LookRotation(_direction);
+            Destroy(gameObject);
+            return;
         }
 
+        // Homing behavior (if target assigned)
+        if (_homingTarget != null && _homingTarget.gameObject.activeInHierarchy)
+        {
+            Vector3 aimPoint = GetHomingAimPoint(_homingTarget);
+            Vector3 desiredDir = (aimPoint - transform.position).normalized;
+            if (desiredDir != Vector3.zero)
+            {
+                _direction = Vector3.Slerp(_direction, desiredDir, Time.deltaTime * 15f).normalized;
+                transform.rotation = Quaternion.LookRotation(_direction);
+            }
+
+            // Proximity kill to avoid eternal orbit in corner cases
+            float dist = Vector3.Distance(transform.position, aimPoint);
+            if (dist <= _proximityDestroy)
+            {
+                // Attempt a final damage application by performing a manual overlap check
+                TryApplyDamageToTarget(_homingTarget);
+                Destroy(gameObject);
+                return;
+            }
+        }
+
+        // Move
         transform.Translate(_direction * _speed * Time.deltaTime, Space.World);
+    }
+
+    private Vector3 GetHomingAimPoint(UnitStats target)
+    {
+        // Prefer collider bounds center if available, otherwise use a sensible chest offset
+        Collider c = target.GetComponentInChildren<Collider>();
+        if (c != null)
+            return c.bounds.center;
+        return target.transform.position + Vector3.up * 0.6f;
+    }
+
+    private void TryApplyDamageToTarget(UnitStats targetStats)
+    {
+        if (targetStats == null) return;
+
+        UnitStats ownerStats = _owner != null ? _owner.GetComponent<UnitStats>() : null;
+        // Only damage enemies (safe default)
+        if (ownerStats != null && !TeamLogic.IsEnemy(ownerStats.team, targetStats.team)) return;
+
+        DamageMessage msg = new DamageMessage(BaseDamage, DamageType.Magical, _owner, IsCrit);
+        targetStats.TakeDamage(msg);
     }
 
     void OnTriggerEnter(Collider other)
     {
-        // 1. Ignore Shooter & Triggers
-        if (other.gameObject == _owner) return;
-        if (other.isTrigger) return; 
+        // Safety: ignore nulls
+        if (other == null) return;
 
-        // 2. CRITICAL FIX: Look in PARENT for stats (Handles hitting limbs/armor)
-        UnitStats targetStats = other.GetComponentInParent<UnitStats>();
-        
-        if (targetStats != null)
+        // Ignore owner's entire root (all children)
+        if (_owner != null && other.transform.root.gameObject == _owner) return;
+
+        // If this collider belongs to a Unit, fetch its UnitStats
+        UnitStats hitStats = other.GetComponent<UnitStats>();
+        if (hitStats == null)
+            hitStats = other.GetComponentInParent<UnitStats>();
+
+        if (hitStats != null)
         {
-            DamageMessage msg = new DamageMessage(_damage, DamageType.Magical, _owner, _isCrit);
-            targetStats.TakeDamage(msg);
+            // Only damage enemies (avoid friendly fire by default)
+            UnitStats ownerStats = _owner != null ? _owner.GetComponent<UnitStats>() : null;
+            if (ownerStats == null || TeamLogic.IsEnemy(ownerStats.team, hitStats.team))
+            {
+                DamageMessage msg = new DamageMessage(BaseDamage, DamageType.Magical, _owner, IsCrit);
+                hitStats.TakeDamage(msg);
+                Destroy(gameObject);
+                return;
+            }
+            else
+            {
+                // Friendly hit: ignore
+                return;
+            }
         }
 
-        // 3. CRITICAL FIX: Destroy is OUTSIDE the if statement.
-        // This ensures the arrow is destroyed even if it hits a wall or a part of the enemy that returns null stats.
+        // Ignore trigger-only volumes (camera, triggers, etc.)
+        if (other.isTrigger) return;
+
+        // Hit world or obstacle
         Destroy(gameObject);
     }
 }

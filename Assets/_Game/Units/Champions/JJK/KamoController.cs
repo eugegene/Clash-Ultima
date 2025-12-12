@@ -1,16 +1,19 @@
+// KamoController.cs
 using UnityEngine;
 
+[RequireComponent(typeof(UnitStats))]
+[RequireComponent(typeof(UnitAttack))]
 public class KamoController : MonoBehaviour
 {
     [Header("Q: Blood Arrows Settings")]
     public float healthCost = 10f;
     public float energyCost = 5f; // Cost per arrow
     public float bonusDamage = 15f;
-    
+
     public bool isBloodArrowsActive = false;
-    
+
     [Header("Visuals")]
-    public Color bloodColor = Color.red; 
+    public Color bloodColor = Color.red;
 
     private UnitStats _stats;
     private UnitAttack _attack;
@@ -34,37 +37,35 @@ public class KamoController : MonoBehaviour
     public void ToggleBloodArrows()
     {
         isBloodArrowsActive = !isBloodArrowsActive;
-        // Debug.Log($"Blood Arrows: {isBloodArrowsActive}");
     }
 
     private void ModifyArrow(SimpleProjectile projectile)
     {
-        if (!isBloodArrowsActive) return;
+        if (!isBloodArrowsActive || projectile == null) return;
 
-        // CHECK: Do we have enough HP AND Energy?
-        if (_stats.CurrentHealth > healthCost && _stats.CurrentResource >= energyCost)
+        // Validate resources
+        if (_stats.CurrentHealth >= healthCost && _stats.CurrentResource >= energyCost)
         {
-            // 1. Pay Costs (HP and Cursed Energy)
+            // Pay costs
             _stats.ModifyHealth(-healthCost);
             _stats.ModifyResource(-energyCost);
 
-            // 2. Gameplay: Make Homing
+            // Make homing if we have a valid attack target
             if (_attack.currentTarget != null)
             {
                 projectile.SetHomingTarget(_attack.currentTarget);
             }
 
-            // 3. Gameplay: Apply Bonus Damage
-            // Calculate Base Damage + Bonus
-            float newDamage = _stats.AttackDamage.Value + bonusDamage;
+            // Apply bonus damage on top of base damage (preserve crit flag)
+            float baseDmg = projectile.BaseDamage;
+            float newDamage = baseDmg + bonusDamage;
             projectile.SetDamage(newDamage);
 
-            // 4. Visuals
+            // Visuals: change material instance color + trail
             ApplyBloodVisuals(projectile);
         }
         else
         {
-            // Turn off automatically if out of resources
             isBloodArrowsActive = false;
             Debug.Log("Out of Blood or Cursed Energy!");
         }
@@ -72,10 +73,20 @@ public class KamoController : MonoBehaviour
 
     private void ApplyBloodVisuals(SimpleProjectile projectile)
     {
+        if (projectile == null) return;
+
         Renderer rend = projectile.GetComponentInChildren<Renderer>();
-        if (rend != null) rend.material.color = bloodColor;
-        
+        if (rend != null)
+        {
+            // Accessing .material creates an instance so shared material is not modified
+            rend.material.color = bloodColor;
+        }
+
         TrailRenderer trail = projectile.GetComponentInChildren<TrailRenderer>();
-        if (trail != null) trail.startColor = bloodColor;
+        if (trail != null)
+        {
+
+            trail.startColor = bloodColor;
+        }
     }
 }
