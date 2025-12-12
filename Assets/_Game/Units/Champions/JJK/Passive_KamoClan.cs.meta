@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: d89b5320136889f469ed9abcbc4b9938
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - icon: {instanceID: 0}
+  - bloodBagItem: {fileID: 11400000, guid: e786b6824a2369046823b3220b4fd279, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

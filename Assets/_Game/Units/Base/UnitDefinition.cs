@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewUnitDef", menuName = "MOBA/Unit Definition")]
@@ -38,6 +39,9 @@ public class UnitDefinition : ScriptableObject
     [Header("Movement")]
     public float moveSpeed = 6f;
     public float rotationSpeed = 20f;
+
+    [Header("Abilities")]
+    public List<PassiveDefinition> passives;
 }
 
 public enum ResourceType

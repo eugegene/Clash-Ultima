@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8e2c04eaed2b447bb0187b0dadc81b, type: 3}
   m_Name: Noritoshi_Kamo
   m_EditorClassIdentifier: 
-  unitName: 
-  verse: 
+  unitName: Noritoshi Kamo
+  verse: Jujutsu Kaisen
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 3891700595563466083, guid: 49bdc117e606cdb41b861674c5251ae1, type: 3}
   maxHealth: 100
   healthRegen: 1.5
-  resourceType: 0
+  resourceType: 5
   maxResource: 100
   resourceRegen: 5
   attackType: 0
@@ -33,3 +33,5 @@ MonoBehaviour:
   magicResist: 10
   moveSpeed: 6
   rotationSpeed: 20
+  passives:
+  - {fileID: 11400000, guid: bd3f85427c0ee214db2ae1360334ec20, type: 2}

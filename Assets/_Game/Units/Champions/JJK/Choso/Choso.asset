@@ -12,20 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8e2c04eaed2b447bb0187b0dadc81b, type: 3}
   m_Name: Choso
   m_EditorClassIdentifier: 
-  unitName: 
-  verse: 
+  unitName: Choso
+  verse: Jujutsu Kaisen
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 8058928956816258970, guid: 4d5dd79e0d9a1674b84212242b74150b, type: 3}
   maxHealth: 100
   healthRegen: 1.5
-  resourceType: 0
+  resourceType: 5
   maxResource: 100
   resourceRegen: 5
   attackType: 0
   projectilePrefab: {fileID: 0}
-  splashRadius: 3
+  splashRadius: 0
   attackDamage: 50
-  attackRange: 5
+  attackRange: 2
   attackSpeed: 1
   critChance: 0
   critDamage: 2
@@ -33,3 +33,4 @@ MonoBehaviour:
   magicResist: 10
   moveSpeed: 6
   rotationSpeed: 20
+  passives: []
