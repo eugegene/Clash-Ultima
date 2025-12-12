@@ -15,7 +15,7 @@ public class SimpleProjectile : MonoBehaviour
         _damage = damage;
         _owner = owner;
         _isCrit = isCrit;
-        Destroy(gameObject, 5f); // Safety destroy
+        Destroy(gameObject, 5f); // Safety timer
     }
 
     void Update()
@@ -25,15 +25,23 @@ public class SimpleProjectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        // 1. Ignore the shooter (prevent shooting yourself)
         if (other.gameObject == _owner) return; 
 
-        UnitStats targetStats = other.GetComponent<UnitStats>();
+        // 2. Ignore other "Trigger" colliders (like Aggro Ranges) so we don't explode on invisible spheres
+        if (other.isTrigger) return;
+
+        // 3. FIX: Use GetComponentInParent to find stats even if we hit a limb/child collider
+        UnitStats targetStats = other.GetComponentInParent<UnitStats>();
+        
         if (targetStats != null)
         {
+            // Deal Damage
             DamageMessage msg = new DamageMessage(_damage, DamageType.Magical, _owner, _isCrit);
             targetStats.TakeDamage(msg);
-            
-            Destroy(gameObject);
         }
+
+        // 4. FIX: Destroy on ANY impact (Walls, Ground, Enemies), not just valid targets
+        Destroy(gameObject);
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Skeleton_AI
   m_EditorClassIdentifier: 
   aggroRange: 3
-  attackInterval: 2
+  attackInterval: 0.5
   canUseAbilities: 0
   healthMod: 1
   damageMod: 1

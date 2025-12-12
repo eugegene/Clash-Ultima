@@ -23,13 +23,13 @@ MonoBehaviour:
   resourceRegen: 5
   attackType: 0
   projectilePrefab: {fileID: 0}
-  splashRadius: 0
+  splashRadius: 1
   attackDamage: 50
-  attackRange: 2
+  attackRange: 10
   attackSpeed: 1
-  critChance: 50
-  critDamage: 2
+  critChance: 10
+  critDamage: 1.25
   armor: 0
   magicResist: 0
-  moveSpeed: 20
+  moveSpeed: 5
   rotationSpeed: 20

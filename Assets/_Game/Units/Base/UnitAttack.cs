@@ -145,19 +145,22 @@ public class UnitAttack : MonoBehaviour
     {
         if (_stats.definition.projectilePrefab == null) return;
 
-        GameObject proj = Instantiate(_stats.definition.projectilePrefab, transform.position + Vector3.up, Quaternion.identity);
+        // Spawn at My Chest Height (Position + Up)
+        Vector3 spawnPos = transform.position + Vector3.up;
+        GameObject proj = Instantiate(_stats.definition.projectilePrefab, spawnPos, Quaternion.identity);
+        
         SimpleProjectile pScript = proj.GetComponent<SimpleProjectile>();
         
         if (pScript != null)
         {
-            Vector3 dir = (currentTarget.transform.position - transform.position).normalized;
+            // FIX: Aim at the Target's Chest, not their feet
+            Vector3 targetCenter = currentTarget.transform.position + Vector3.up; 
             
-            // 1. Calculate Damage & Crit Status
+            Vector3 dir = (targetCenter - spawnPos).normalized;
+            
             bool isCrit;
             float damage = GetDamage(out isCrit); 
 
-            // 2. Pass BOTH to the projectile
-            // (Note: You need to update SimpleProjectile.Initialize to accept 'bool isCrit')
             pScript.Initialize(dir, 20f, damage, gameObject, isCrit);
         }
     }
