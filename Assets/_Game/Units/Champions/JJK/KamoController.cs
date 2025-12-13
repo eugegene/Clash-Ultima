@@ -9,6 +9,7 @@ public class KamoController : MonoBehaviour
     public float healthCost = 10f;
     public float energyCost = 5f; 
     public float bonusDamage = 15f;
+    public float bloodArrowSpeed = 35f;
 
     public bool isBloodArrowsActive = false;
 
@@ -55,6 +56,8 @@ public class KamoController : MonoBehaviour
                 projectile.SetHomingTarget(_attack.currentTarget);
 
             projectile.SetDamage(projectile.BaseDamage + bonusDamage);
+            
+            projectile.SetSpeed(bloodArrowSpeed); 
 
             ApplyBloodVisuals(projectile);
         }

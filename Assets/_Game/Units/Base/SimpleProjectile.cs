@@ -54,6 +54,11 @@ public class SimpleProjectile : MonoBehaviour
         BaseDamage = amount;
     }
 
+    public void SetSpeed(float newSpeed)
+    {
+        _speed = newSpeed;
+    }
+
     void Update()
     {
         if (Time.time - _spawnTime >= _lifeTime)
