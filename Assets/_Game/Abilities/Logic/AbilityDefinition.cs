@@ -2,9 +2,9 @@ using UnityEngine;
 
 public enum TargetingMode
 {
-    NoTarget,       // Instant cast (War Stomp, Self Heal)
-    Point,          // Skillshots (Fireball, Blink)
-    TargetUnit      // Point & Click (Heal Ally, Execute Enemy)
+    NoTarget,       
+    Point,          
+    TargetUnit      
 }
 
 public abstract class AbilityDefinition : ScriptableObject
@@ -17,14 +17,15 @@ public abstract class AbilityDefinition : ScriptableObject
     [Header("Costs & Cooldowns")]
     public float manaCost;
     public float cooldown;
-    public float castRange; // How far can I throw it?
+    public float castRange; 
 
     [Header("Settings")]
     public TargetingMode targetingMode;
 
-    // The Magic Function. Every spell must implement this differently.
-    // caster: The Hero using it.
-    // point: The mouse position on the ground.
-    // target: The specific unit clicked (if any).
+    // --- NEW METHOD ---
+    // Called once when the game starts (good for Passives in Ability Slots)
+    public virtual void OnEquip(UnitStats user) { }
+    // ------------------
+
     public abstract void OnCast(UnitStats caster, Vector3 point, UnitStats target);
 }

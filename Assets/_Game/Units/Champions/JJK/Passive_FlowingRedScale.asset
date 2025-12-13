@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d57102321bff5a49a3397072bceacee, type: 3}
+  m_Name: Passive_FlowingRedScale
+  m_EditorClassIdentifier: 
+  passiveName: Flowing Red Scale
+  description: 
+  icon: {fileID: 0}
+  moveSpeedPercent: 0.2
+  attackSpeedPercent: 0.3
+  critChanceFlat: 25

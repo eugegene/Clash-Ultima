@@ -1,4 +1,5 @@
 using UnityEngine;
+using System; // Required for Action event
 
 public class UnitStats : MonoBehaviour
 {
@@ -13,13 +14,13 @@ public class UnitStats : MonoBehaviour
     public Stat MaxResource;
     public Stat ResourceRegen;
     
-    // --- NEW STATS ADDED HERE ---
+    // --- NEW STATS ---
     public Stat AttackDamage;
     public Stat AttackRange;
     public Stat AttackSpeed;
     public Stat CritChance; 
     public Stat CritDamage;
-    // ----------------------------
+    // -----------------
 
     public Stat MoveSpeed;
     public Stat Armor;
@@ -30,6 +31,11 @@ public class UnitStats : MonoBehaviour
 
     public float CurrentHealth { get; private set; }
     public float CurrentResource { get; private set; }
+
+    // --- EVENTS ---
+    // Added to allow passives (like Flowing Red Scale) to detect combat
+    public event Action<DamageMessage> OnDamageTaken; 
+    // --------------
 
     private void Awake()
     {
@@ -71,9 +77,6 @@ public class UnitStats : MonoBehaviour
             }
         }
     }
-
-    // ... (Keep Regenerate, ModifyHealth, TakeDamage, Die as they were) ...
-    // Just copy the rest of your existing file content here for those methods.
     
     private void Regenerate()
     {
@@ -106,13 +109,17 @@ public class UnitStats : MonoBehaviour
     {
         float finalDamage = DamageProcessor.CalculateFinalDamage(this, msg);
         CurrentHealth -= finalDamage;
-        // Debug.Log($"{name} took {finalDamage} damage.");
         
         if (DamageTextManager.Instance != null)
         {
             // Pass the IsCrit flag to the UI
             DamageTextManager.Instance.ShowDamage(finalDamage, transform.position, msg.IsCrit);
         }
+
+        // --- NOTIFY LISTENERS ---
+        // This triggers the Flowing Red Scale passive "In Combat" state
+        OnDamageTaken?.Invoke(msg);
+        // ------------------------
 
         if (CurrentHealth <= 0)
         {

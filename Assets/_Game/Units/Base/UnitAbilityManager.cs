@@ -40,6 +40,15 @@ public class UnitAbilityManager : MonoBehaviour
         _rangeIndicator.SetActive(false);
     }
 
+    void Start()
+    {
+        // Initialize all abilities in the loadout
+        if (abilityQ != null) abilityQ.OnEquip(_stats);
+        if (abilityW != null) abilityW.OnEquip(_stats);
+        if (abilityE != null) abilityE.OnEquip(_stats);
+        if (abilityR != null) abilityR.OnEquip(_stats);
+    }
+
     void Update()
     {
         HandleCooldowns();
