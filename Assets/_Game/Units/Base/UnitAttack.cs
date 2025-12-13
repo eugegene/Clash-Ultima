@@ -1,11 +1,16 @@
 ﻿// UnitAttack.cs
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(UnitStats))]
 [RequireComponent(typeof(UnitMotor))]
 public class UnitAttack : MonoBehaviour
 {
-    public event System.Action<SimpleProjectile> OnProjectileLaunched;
+    // --- EVENTS ---
+    public event Action<UnitStats> OnAttackStarted;
+    public event Action<SimpleProjectile> OnProjectileLaunched;
+    public event Action<DamageMessage> OnBeforeDamageApplied;
+    public event Action<DamageMessage> OnAfterDamageApplied;
 
     private UnitStats _stats;
     private UnitMotor _motor;
@@ -13,7 +18,6 @@ public class UnitAttack : MonoBehaviour
     [Header("State")]
     public UnitStats currentTarget;
     public float attackCooldownTimer;
-
     private bool _isAttacking = false;
 
     void Awake()
@@ -42,13 +46,13 @@ public class UnitAttack : MonoBehaviour
         if (currentTarget == null || !currentTarget.gameObject.activeInHierarchy)
         {
             currentTarget = null;
+            _isAttacking = false;
             return;
         }
 
         float distance = Vector3.Distance(transform.position, currentTarget.transform.position);
         float range = _stats.AttackRange.Value;
-
-        float stopChaseDistance = _isAttacking ? (range * 1.2f) : range;
+        float stopChaseDistance = _isAttacking ? range * 1.2f : range;
 
         if (distance <= stopChaseDistance)
         {
@@ -57,9 +61,7 @@ public class UnitAttack : MonoBehaviour
             FaceTarget();
 
             if (attackCooldownTimer <= 0f)
-            {
                 PerformAttack();
-            }
         }
         else
         {
@@ -68,35 +70,15 @@ public class UnitAttack : MonoBehaviour
         }
     }
 
-    private void PerformAttack()
-    {
-        attackCooldownTimer = 1f / Mathf.Max(0.0001f, _stats.AttackSpeed.Value);
-
-        switch (_stats.definition.attackType)
-        {
-            case AttackType.Touch:
-                DoMeleeAttack();
-                break;
-            case AttackType.Projectile:
-                DoRangedAttack();
-                break;
-            case AttackType.Splash:
-                DoSplashAttack();
-                break;
-        }
-
-        Debug.Log($"Attacked {currentTarget.name}!");
-    }
-
     private void FaceTarget()
     {
-        Vector3 direction = (currentTarget.transform.position - transform.position);
-        direction.y = 0f;
-        direction = direction.normalized;
-        if (direction != Vector3.zero)
+        Vector3 dir = currentTarget.transform.position - transform.position;
+        dir.y = 0f;
+        dir.Normalize();
+        if (dir != Vector3.zero)
         {
-            Quaternion lookRot = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * 20f);
+            Quaternion rot = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 18f);
         }
     }
 
@@ -113,23 +95,52 @@ public class UnitAttack : MonoBehaviour
 
     private float GetDamage(out bool isCrit)
     {
-        float damage = _stats.AttackDamage.Value;
+        float dmg = _stats.AttackDamage.Value;
         isCrit = false;
 
-        if (Random.value < (_stats.CritChance.Value / 100f))
+        if (UnityEngine.Random.value < (_stats.CritChance.Value / 100f))
         {
-            damage *= _stats.CritDamage.Value;
+            dmg *= _stats.CritDamage.Value;
             isCrit = true;
         }
-        return damage;
+        return dmg;
+    }
+
+    private void PerformAttack()
+    {
+        attackCooldownTimer = 1f / Mathf.Max(0.001f, _stats.AttackSpeed.Value);
+
+        // Trigger generic event before attack logic
+        OnAttackStarted?.Invoke(currentTarget);
+
+        switch (_stats.definition.attackType)
+        {
+            case AttackType.Touch:
+                DoMeleeAttack();
+                break;
+            case AttackType.Projectile:
+                DoRangedAttack();
+                break;
+            case AttackType.Splash:
+                DoSplashAttack();
+                break;
+        }
     }
 
     private void DoMeleeAttack()
     {
         bool isCrit;
         float dmg = GetDamage(out isCrit);
+
         DamageMessage msg = new DamageMessage(dmg, DamageType.Physical, gameObject, isCrit);
+
+        // Event before applying damage
+        OnBeforeDamageApplied?.Invoke(msg);
+
         currentTarget.TakeDamage(msg);
+
+        // Event after applying damage
+        OnAfterDamageApplied?.Invoke(msg);
     }
 
     private void DoRangedAttack()
@@ -138,21 +149,22 @@ public class UnitAttack : MonoBehaviour
 
         Vector3 spawnPos = transform.position + Vector3.up * 0.6f;
         Quaternion spawnRot = Quaternion.identity;
-        GameObject proj = Instantiate(_stats.definition.projectilePrefab, spawnPos, spawnRot);
-        SimpleProjectile pScript = proj.GetComponent<SimpleProjectile>();
 
-        if (pScript != null)
+        GameObject projObj = Instantiate(_stats.definition.projectilePrefab, spawnPos, spawnRot);
+        SimpleProjectile proj = projObj.GetComponent<SimpleProjectile>();
+
+        if (proj != null)
         {
             Vector3 targetCenter = currentTarget.transform.position + Vector3.up * 0.6f;
             Vector3 dir = (targetCenter - spawnPos).normalized;
 
             bool isCrit;
-            float damage = GetDamage(out isCrit);
+            float dmg = GetDamage(out isCrit);
 
-            pScript.Initialize(dir, 20f, damage, gameObject, isCrit);
+            proj.Initialize(dir, 20f, dmg, gameObject, isCrit);
 
-            // Notify listeners so they can modify projectile (e.g., KamoController)
-            OnProjectileLaunched?.Invoke(pScript);
+            // Trigger event so external abilities can modify the projectile
+            OnProjectileLaunched?.Invoke(proj);
         }
     }
 
@@ -161,16 +173,23 @@ public class UnitAttack : MonoBehaviour
         Collider[] hits = Physics.OverlapSphere(currentTarget.transform.position, _stats.definition.splashRadius);
 
         bool isCrit;
-        float damage = GetDamage(out isCrit);
+        float dmg = GetDamage(out isCrit);
 
         foreach (var hit in hits)
         {
             UnitStats victim = hit.GetComponent<UnitStats>();
-            if (victim == null) victim = hit.GetComponentInParent<UnitStats>();
+            if (victim == null)
+                victim = hit.GetComponentInParent<UnitStats>();
+
             if (victim != null && victim != _stats && TeamLogic.IsEnemy(_stats.team, victim.team))
             {
-                DamageMessage msg = new DamageMessage(damage, DamageType.Fire, gameObject, isCrit);
+                DamageMessage msg = new DamageMessage(dmg, DamageType.Fire, gameObject, isCrit);
+
+                OnBeforeDamageApplied?.Invoke(msg);
+
                 victim.TakeDamage(msg);
+
+                OnAfterDamageApplied?.Invoke(msg);
             }
         }
     }

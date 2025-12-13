@@ -7,7 +7,7 @@ public class KamoController : MonoBehaviour
 {
     [Header("Q: Blood Arrows Settings")]
     public float healthCost = 10f;
-    public float energyCost = 5f; // Cost per arrow
+    public float energyCost = 5f; 
     public float bonusDamage = 15f;
 
     public bool isBloodArrowsActive = false;
@@ -26,12 +26,14 @@ public class KamoController : MonoBehaviour
 
     void OnEnable()
     {
-        if (_attack != null) _attack.OnProjectileLaunched += ModifyArrow;
+        if (_attack != null)
+            _attack.OnProjectileLaunched += ModifyArrow;
     }
 
     void OnDisable()
     {
-        if (_attack != null) _attack.OnProjectileLaunched -= ModifyArrow;
+        if (_attack != null)
+            _attack.OnProjectileLaunched -= ModifyArrow;
     }
 
     public void ToggleBloodArrows()
@@ -43,25 +45,17 @@ public class KamoController : MonoBehaviour
     {
         if (!isBloodArrowsActive || projectile == null) return;
 
-        // Validate resources
-        if (_stats.CurrentHealth >= healthCost && _stats.CurrentResource >= energyCost)
+        if (_stats.CurrentHealth >= healthCost &&
+            _stats.CurrentResource >= energyCost)
         {
-            // Pay costs
             _stats.ModifyHealth(-healthCost);
             _stats.ModifyResource(-energyCost);
 
-            // Make homing if we have a valid attack target
             if (_attack.currentTarget != null)
-            {
                 projectile.SetHomingTarget(_attack.currentTarget);
-            }
 
-            // Apply bonus damage on top of base damage (preserve crit flag)
-            float baseDmg = projectile.BaseDamage;
-            float newDamage = baseDmg + bonusDamage;
-            projectile.SetDamage(newDamage);
+            projectile.SetDamage(projectile.BaseDamage + bonusDamage);
 
-            // Visuals: change material instance color + trail
             ApplyBloodVisuals(projectile);
         }
         else
@@ -73,20 +67,12 @@ public class KamoController : MonoBehaviour
 
     private void ApplyBloodVisuals(SimpleProjectile projectile)
     {
-        if (projectile == null) return;
+        Renderer r = projectile.GetComponentInChildren<Renderer>();
+        if (r != null)
+            r.material.color = bloodColor;
 
-        Renderer rend = projectile.GetComponentInChildren<Renderer>();
-        if (rend != null)
-        {
-            // Accessing .material creates an instance so shared material is not modified
-            rend.material.color = bloodColor;
-        }
-
-        TrailRenderer trail = projectile.GetComponentInChildren<TrailRenderer>();
-        if (trail != null)
-        {
-
-            trail.startColor = bloodColor;
-        }
+        TrailRenderer t = projectile.GetComponentInChildren<TrailRenderer>();
+        if (t != null)
+            t.startColor = bloodColor;
     }
 }

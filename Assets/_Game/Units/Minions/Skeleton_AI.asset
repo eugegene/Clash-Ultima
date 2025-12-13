@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cc8999b7409c304991747960f186b43, type: 3}
   m_Name: Skeleton_AI
   m_EditorClassIdentifier: 
-  aggroRange: 3
+  aggroRange: 2
   attackInterval: 0.5
   canUseAbilities: 0
   healthMod: 1

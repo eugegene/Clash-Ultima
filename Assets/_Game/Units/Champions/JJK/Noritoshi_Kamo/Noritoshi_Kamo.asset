@@ -23,7 +23,7 @@ MonoBehaviour:
   resourceRegen: 5
   attackType: 1
   projectilePrefab: {fileID: 2384411813088257935, guid: fb115978258e35d4cb038063dcbe587f, type: 3}
-  splashRadius: 0
+  splashRadius: 2
   attackDamage: 20
   attackRange: 15
   attackSpeed: 1

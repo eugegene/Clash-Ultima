@@ -1771,7 +1771,7 @@ MonoBehaviour:
   aiData: {fileID: 11400000, guid: 6408fb8351e44b845a1eea1a1779bebe, type: 2}
   team: 1
   spawnPoint: {fileID: 644102521}
-  spawnInterval: 30
+  spawnInterval: 25
   minionsPerWave: 1
 --- !u!4 &779218653
 Transform:
