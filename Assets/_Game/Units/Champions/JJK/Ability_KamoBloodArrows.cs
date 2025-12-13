@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "MOBA/Abilities/Kamo/Q - Blood Arrows")]
+[CreateAssetMenu(menuName = "MOBA/Abilities/Kamo/Blood Arrows")]
 public class Ability_KamoBloodArrows : AbilityDefinition
 {
     public override void OnCast(UnitStats caster, Vector3 point, UnitStats target)

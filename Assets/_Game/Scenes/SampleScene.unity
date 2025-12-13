@@ -1772,7 +1772,7 @@ MonoBehaviour:
   team: 1
   spawnPoint: {fileID: 644102521}
   spawnInterval: 25
-  minionsPerWave: 1
+  minionsPerWave: 3
 --- !u!4 &779218653
 Transform:
   m_ObjectHideFlags: 0

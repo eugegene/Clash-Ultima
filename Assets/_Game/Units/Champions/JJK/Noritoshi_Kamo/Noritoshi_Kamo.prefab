@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: abilityQ
       value: 
       objectReference: {fileID: 11400000, guid: 2aa0d5595014f6a4a9a6a1ab75898416, type: 2}
+    - target: {fileID: -3970822839783397441, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
+      propertyPath: abilityW
+      value: 
+      objectReference: {fileID: 11400000, guid: 78902553d6cd09e4aa73f5bd3957ad28, type: 2}
     - target: {fileID: 3786533422441437921, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -82,5 +86,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthCost: 10
+  energyCost: 5
   bonusDamage: 15
+  bloodArrowSpeed: 35
   isBloodArrowsActive: 0
+  bloodColor: {r: 1, g: 0, b: 0, a: 1}

@@ -1,4 +1,3 @@
-// KamoController.cs
 using UnityEngine;
 
 [RequireComponent(typeof(UnitStats))]
@@ -9,12 +8,17 @@ public class KamoController : MonoBehaviour
     public float healthCost = 10f;
     public float energyCost = 5f; 
     public float bonusDamage = 15f;
+    
+    [Tooltip("Speed of the Blood Arrow projectile")]
     public float bloodArrowSpeed = 35f;
 
     public bool isBloodArrowsActive = false;
 
     [Header("Visuals")]
     public Color bloodColor = Color.red;
+
+    // --- NEW: PASSIVE THRESHOLD ---
+    private float _bloodThresholdPercent = 0f;
 
     private UnitStats _stats;
     private UnitAttack _attack;
@@ -37,6 +41,21 @@ public class KamoController : MonoBehaviour
             _attack.OnProjectileLaunched -= ModifyArrow;
     }
 
+    // Called by Passive_KamoClan.OnEquip
+    public void SetBloodThreshold(float percent)
+    {
+        _bloodThresholdPercent = percent;
+    }
+
+    // Centralized Helper: Use this for ALL blood abilities
+    public bool CanUseBloodTechnique()
+    {
+        float threshold = _stats.MaxHealth.Value * _bloodThresholdPercent;
+        
+        // Strict check: Must be ABOVE 30%, not AT 30%
+        return _stats.CurrentHealth > threshold;
+    }
+
     public void ToggleBloodArrows()
     {
         isBloodArrowsActive = !isBloodArrowsActive;
@@ -46,6 +65,15 @@ public class KamoController : MonoBehaviour
     {
         if (!isBloodArrowsActive || projectile == null) return;
 
+        // 1. Check Passive Restriction FIRST
+        if (!CanUseBloodTechnique())
+        {
+            isBloodArrowsActive = false; // Auto-toggle off
+            Debug.Log("<color=red>HP too low (Risk Zone)! Blood Technique disabled.</color>");
+            return;
+        }
+
+        // 2. Check Costs
         if (_stats.CurrentHealth >= healthCost &&
             _stats.CurrentResource >= energyCost)
         {
@@ -56,8 +84,7 @@ public class KamoController : MonoBehaviour
                 projectile.SetHomingTarget(_attack.currentTarget);
 
             projectile.SetDamage(projectile.BaseDamage + bonusDamage);
-            
-            projectile.SetSpeed(bloodArrowSpeed); 
+            projectile.SetSpeed(bloodArrowSpeed);
 
             ApplyBloodVisuals(projectile);
         }
@@ -71,11 +98,9 @@ public class KamoController : MonoBehaviour
     private void ApplyBloodVisuals(SimpleProjectile projectile)
     {
         Renderer r = projectile.GetComponentInChildren<Renderer>();
-        if (r != null)
-            r.material.color = bloodColor;
+        if (r != null) r.material.color = bloodColor;
 
         TrailRenderer t = projectile.GetComponentInChildren<TrailRenderer>();
-        if (t != null)
-            t.startColor = bloodColor;
+        if (t != null) t.startColor = bloodColor;
     }
 }
