@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   passiveName: Flowing Red Scale
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8a03143706e7f3546bd3f5078e28d6cb, type: 3}
   moveSpeedPercent: 0.2
   attackSpeedPercent: 0.3
   critChanceFlat: 25

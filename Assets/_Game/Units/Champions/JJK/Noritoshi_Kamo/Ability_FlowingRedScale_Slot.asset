@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a130555754ecbe348a4c16cc03551d6e, type: 3}
   m_Name: Ability_FlowingRedScale_Slot
   m_EditorClassIdentifier: 
-  abilityName: 
-  icon: {fileID: 0}
+  abilityName: Flowing Red Scale
+  icon: {fileID: 21300000, guid: 8a03143706e7f3546bd3f5078e28d6cb, type: 3}
   description: 
   manaCost: 0
   cooldown: 0
   castRange: 0
   targetingMode: 0
-  passiveToEquip: {fileID: 0}
+  passiveToEquip: {fileID: 11400000, guid: b1cb18f557153d8468da85d510a4f2ff, type: 2}
