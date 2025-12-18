@@ -1,83 +1,58 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Linq;
 
 public class AbilitySlotUI : MonoBehaviour
 {
-    // We removed 'public' so they don't show up in Inspector to confuse you.
-    // The script will find them automatically.
-    private Image _iconImage;
-    private Image _cooldownOverlay;
-    private TMP_Text _cooldownText;
-    private TMP_Text _keyText;
+    [Header("UI References (Drag these in Prefab!)")]
+    public Image iconImage;
+    public Image cooldownOverlay;
+    public TMP_Text cooldownText;
+    public TMP_Text keyText;
 
     private float _cooldownDuration;
 
     void Awake()
     {
-        // --- AUTO-WIRING SECTION ---
-        // This looks through all children to find the components we need.
+        // --- FALLBACK AUTO-WIRING ---
+        // If you forgot to assign them in the Inspector, we try to find them by name.
         
-        // 1. Find the Icon (It's usually the first Image that ISN'T the background)
-        Image[] allImages = GetComponentsInChildren<Image>(true);
-        foreach (var img in allImages)
+        if (iconImage == null) iconImage = FindChild<Image>("Icon");
+        if (cooldownOverlay == null) cooldownOverlay = FindChild<Image>("Cooldown", "Fill", "Overlay");
+        if (keyText == null) keyText = FindChild<TMP_Text>("Key", "HotKey");
+        if (cooldownText == null) cooldownText = FindChild<TMP_Text>("Timer", "Cooldown", "Text");
+
+        // --- FORCE FIXES ---
+        // Ensure the Cooldown Overlay is actually set to "Filled" mode so it can animate
+        if (cooldownOverlay != null && cooldownOverlay.type != Image.Type.Filled)
         {
-            // Assuming the background is on the root, we want the child image
-            if (img.gameObject != this.gameObject && img.type != Image.Type.Filled) 
-            {
-                _iconImage = img;
-                break;
-            }
+            cooldownOverlay.type = Image.Type.Filled;
+            cooldownOverlay.fillMethod = Image.FillMethod.Radial360;
+            cooldownOverlay.fillAmount = 0; // Start empty
         }
 
-        // 2. Find the Cooldown Overlay (The one set to "Filled")
-        foreach (var img in allImages)
-        {
-            if (img.type == Image.Type.Filled)
-            {
-                _cooldownOverlay = img;
-                break;
-            }
-        }
-
-        // 3. Find the Texts
-        TMP_Text[] allTexts = GetComponentsInChildren<TMP_Text>(true);
-        foreach (var txt in allTexts)
-        {
-            // If the text is short (like "Q"), it's the Key. If it's empty or numbers, it's the Timer.
-            if (txt.text.Length <= 1 && !char.IsDigit(txt.text.FirstOrDefault()))
-                _keyText = txt;
-            else
-                _cooldownText = txt;
-        }
-
-        // Debugging to verify it worked
-        if (_iconImage == null) Debug.LogError($"{name}: Could not auto-find an Icon Image!");
-        if (_cooldownOverlay == null) Debug.LogWarning($"{name}: Could not auto-find a Filled Image for Cooldowns.");
+        // Hide the timer text by default
+        if (cooldownText != null) cooldownText.text = "";
     }
 
     public void Initialize(AbilityDefinition ability, string key)
     {
-        // Safety: If auto-wiring failed, don't crash
-        if (_iconImage == null) return;
+        // Set the Key (Q, W, E, R)
+        if (keyText != null) keyText.text = key;
 
         if (ability != null)
         {
-            _iconImage.sprite = ability.icon;
-            _iconImage.enabled = (ability.icon != null);
-            _iconImage.color = Color.white; // Ensure full visibility
+            if (iconImage != null)
+            {
+                iconImage.sprite = ability.icon;
+                iconImage.enabled = (ability.icon != null);
+            }
             _cooldownDuration = ability.cooldown;
         }
-        else
-        {
-            _iconImage.enabled = false;
-            _cooldownDuration = 0;
-        }
-
-        if (_keyText != null) _keyText.text = key;
-        if (_cooldownOverlay != null) _cooldownOverlay.fillAmount = 0;
-        if (_cooldownText != null) _cooldownText.text = "";
+        
+        // Reset Cooldown State
+        if (cooldownOverlay != null) cooldownOverlay.fillAmount = 0;
+        if (cooldownText != null) cooldownText.text = "";
     }
 
     public void UpdateCooldown(float currentCooldown)
@@ -87,24 +62,40 @@ public class AbilitySlotUI : MonoBehaviour
         if (currentCooldown > 0)
         {
             float fill = Mathf.Clamp01(currentCooldown / _cooldownDuration);
-            if (_cooldownOverlay != null) _cooldownOverlay.fillAmount = fill;
             
-            if (_cooldownText != null)
+            if (cooldownOverlay != null) 
+                cooldownOverlay.fillAmount = fill;
+            
+            if (cooldownText != null)
             {
+                // Show "3.5" for small numbers, "4" for big ones
                 if (currentCooldown < 10f)
-                    _cooldownText.text = currentCooldown.ToString("F1");
+                    cooldownText.text = currentCooldown.ToString("F1");
                 else
-                    _cooldownText.text = Mathf.CeilToInt(currentCooldown).ToString();
+                    cooldownText.text = Mathf.CeilToInt(currentCooldown).ToString();
             }
         }
         else
         {
-            if (_cooldownOverlay != null) _cooldownOverlay.fillAmount = 0;
-            if (_cooldownText != null) _cooldownText.text = "";
+            // Cooldown Finished
+            if (cooldownOverlay != null) cooldownOverlay.fillAmount = 0;
+            if (cooldownText != null) cooldownText.text = "";
         }
     }
-    
-    // Helper for checking digits
-    private char FirstOrDefault(string s) => string.IsNullOrEmpty(s) ? ' ' : s[0];
-    private bool IsDigit(char c) => c >= '0' && c <= '9';
+
+    // Helper to find components by potential names
+    private T FindChild<T>(params string[] potentialNames) where T : Component
+    {
+        T[] allComponents = GetComponentsInChildren<T>(true);
+        foreach (var comp in allComponents)
+        {
+            // Check if the GameObject name contains any of our keywords
+            foreach (var nameKey in potentialNames)
+            {
+                if (comp.name.IndexOf(nameKey, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    return comp;
+            }
+        }
+        return null;
+    }
 }
