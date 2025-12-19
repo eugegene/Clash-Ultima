@@ -42,8 +42,6 @@ public class UnitResourceBar : MonoBehaviour
         {
             case ResourceType.Mana: fillImage.color = manaColor; break;
             case ResourceType.Energy: fillImage.color = energyColor; break;
-            case ResourceType.Rage: fillImage.color = rageColor; break;
-            case ResourceType.Fury: fillImage.color = furyColor; break;
             case ResourceType.CursedEnergy: fillImage.color = cursedEnergyColor; break;
             case ResourceType.None: 
                 gameObject.SetActive(false); // Hide bar if unit has no resource

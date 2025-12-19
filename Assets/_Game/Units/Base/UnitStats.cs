@@ -68,14 +68,6 @@ public class UnitStats : MonoBehaviour
 
         CurrentHealth = MaxHealth.Value;
         CurrentResource = MaxResource.Value;
-
-        if (definition.passives != null)
-        {
-            foreach (var passive in definition.passives)
-            {
-                if (passive != null) passive.OnEquip(this);
-            }
-        }
     }
     
     private void Regenerate()

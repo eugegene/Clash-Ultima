@@ -39,9 +39,6 @@ public class UnitDefinition : ScriptableObject
     [Header("Movement")]
     public float moveSpeed = 6f;
     public float rotationSpeed = 20f;
-
-    [Header("Abilities")]
-    public List<PassiveDefinition> passives;
 }
 
 public enum ResourceType
@@ -49,8 +46,6 @@ public enum ResourceType
     None,
     Mana,
     Energy,
-    Rage,
-    Fury,
     CursedEnergy
 }
 

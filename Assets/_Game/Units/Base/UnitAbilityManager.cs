@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class UnitAbilityManager : MonoBehaviour
 {
     [Header("Loadout")]
+    public List<PassiveDefinition> passives;
     public AbilityDefinition abilityQ;
     public AbilityDefinition abilityW;
     public AbilityDefinition abilityE;
@@ -42,7 +44,15 @@ public class UnitAbilityManager : MonoBehaviour
 
     void Start()
     {
-        // Initialize all abilities in the loadout
+        foreach (var p in passives)
+        {
+            if (p != null)
+            {
+                p.OnEquip(_stats);
+                Debug.Log($"Equipped Passive: {p.passiveName}");
+            }
+        }
+
         if (abilityQ != null) abilityQ.OnEquip(_stats);
         if (abilityW != null) abilityW.OnEquip(_stats);
         if (abilityE != null) abilityE.OnEquip(_stats);
@@ -54,10 +64,7 @@ public class UnitAbilityManager : MonoBehaviour
         HandleCooldowns();
         HandleInput();
         
-        if (_pendingAbility != null)
-        {
-            UpdateAimingVisuals();
-        }
+        if (_pendingAbility != null) UpdateAimingVisuals();
     }
 
     private void HandleCooldowns()
@@ -101,14 +108,12 @@ public class UnitAbilityManager : MonoBehaviour
             return;
         }
         
-        // --- FIX: Check for Instant Cast ---
         if (ability.targetingMode == TargetingMode.NoTarget)
         {
             // Cast immediately without entering aiming mode
             ExecuteCast(ability); 
             return;
         }
-        // -----------------------------------
 
         if (_stats.CurrentResource < ability.manaCost)
         {
@@ -116,7 +121,6 @@ public class UnitAbilityManager : MonoBehaviour
             return;
         }
 
-        // Enter "Aiming Mode"
         _pendingAbility = ability;
         
         _rangeIndicator.SetActive(true);

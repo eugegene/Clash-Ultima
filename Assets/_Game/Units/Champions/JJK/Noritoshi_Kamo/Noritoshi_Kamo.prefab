@@ -24,6 +24,18 @@ PrefabInstance:
       propertyPath: abilityW
       value: 
       objectReference: {fileID: 11400000, guid: 78902553d6cd09e4aa73f5bd3957ad28, type: 2}
+    - target: {fileID: -3970822839783397441, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
+      propertyPath: passiveSlot
+      value: 
+      objectReference: {fileID: 11400000, guid: b1cb18f557153d8468da85d510a4f2ff, type: 2}
+    - target: {fileID: -3970822839783397441, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
+      propertyPath: passives.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3970822839783397441, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
+      propertyPath: passives.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: bd3f85427c0ee214db2ae1360334ec20, type: 2}
     - target: {fileID: 3786533422441437921, guid: 31bceff3f5205bc43a7334315becb262, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

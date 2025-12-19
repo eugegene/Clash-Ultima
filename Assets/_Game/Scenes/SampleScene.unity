@@ -1102,6 +1102,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 7118861468679767679, guid: 024ac19389cd69049bce13f1840a7814, type: 3}
   slotContainer: {fileID: 507600147}
+  passiveSlotPrefab: {fileID: 7118861468679767679, guid: 23180c9a54aa0884a91270dccb0b223e, type: 3}
+  passiveContainer: {fileID: 507600147}
 --- !u!114 &507600149
 MonoBehaviour:
   m_ObjectHideFlags: 0

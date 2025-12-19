@@ -4,7 +4,7 @@ using TMPro;
 
 public class AbilitySlotUI : MonoBehaviour
 {
-    [Header("UI References (Drag these in Prefab!)")]
+    [Header("UI References (Drag & Drop in Inspector)")]
     public Image iconImage;
     public Image cooldownOverlay;
     public TMP_Text cooldownText;
@@ -12,32 +12,10 @@ public class AbilitySlotUI : MonoBehaviour
 
     private float _cooldownDuration;
 
-    void Awake()
-    {
-        // --- FALLBACK AUTO-WIRING ---
-        // If you forgot to assign them in the Inspector, we try to find them by name.
-        
-        if (iconImage == null) iconImage = FindChild<Image>("Icon");
-        if (cooldownOverlay == null) cooldownOverlay = FindChild<Image>("Cooldown", "Fill", "Overlay");
-        if (keyText == null) keyText = FindChild<TMP_Text>("Key", "HotKey");
-        if (cooldownText == null) cooldownText = FindChild<TMP_Text>("Timer", "Cooldown", "Text");
-
-        // --- FORCE FIXES ---
-        // Ensure the Cooldown Overlay is actually set to "Filled" mode so it can animate
-        if (cooldownOverlay != null && cooldownOverlay.type != Image.Type.Filled)
-        {
-            cooldownOverlay.type = Image.Type.Filled;
-            cooldownOverlay.fillMethod = Image.FillMethod.Radial360;
-            cooldownOverlay.fillAmount = 0; // Start empty
-        }
-
-        // Hide the timer text by default
-        if (cooldownText != null) cooldownText.text = "";
-    }
-
+    // --- 1. Initialize for Active Abilities (Q, W, E, R) ---
     public void Initialize(AbilityDefinition ability, string key)
     {
-        // Set the Key (Q, W, E, R)
+        // Set Key Text
         if (keyText != null) keyText.text = key;
 
         if (ability != null)
@@ -49,14 +27,36 @@ public class AbilitySlotUI : MonoBehaviour
             }
             _cooldownDuration = ability.cooldown;
         }
-        
-        // Reset Cooldown State
+        else
+        {
+            // Empty Slot
+            if (iconImage != null) iconImage.enabled = false;
+        }
+
+        // Reset Cooldown Visuals
         if (cooldownOverlay != null) cooldownOverlay.fillAmount = 0;
         if (cooldownText != null) cooldownText.text = "";
     }
 
+    // --- 2. Initialize for Passives (THE FIX) ---
+    public void Initialize(PassiveDefinition passive)
+    {
+        // Passives don't have keys or timers, so clear them
+        if (keyText != null) keyText.text = "";
+        if (cooldownText != null) cooldownText.text = "";
+        if (cooldownOverlay != null) cooldownOverlay.fillAmount = 0;
+
+        // Set Icon
+        if (passive != null && iconImage != null)
+        {
+            iconImage.sprite = passive.icon;
+            iconImage.enabled = (passive.icon != null);
+        }
+    }
+
     public void UpdateCooldown(float currentCooldown)
     {
+        // If it's a passive or no cooldown, do nothing
         if (_cooldownDuration <= 0) return;
 
         if (currentCooldown > 0)
@@ -68,7 +68,6 @@ public class AbilitySlotUI : MonoBehaviour
             
             if (cooldownText != null)
             {
-                // Show "3.5" for small numbers, "4" for big ones
                 if (currentCooldown < 10f)
                     cooldownText.text = currentCooldown.ToString("F1");
                 else
@@ -77,25 +76,9 @@ public class AbilitySlotUI : MonoBehaviour
         }
         else
         {
-            // Cooldown Finished
+            // Cooldown Ready
             if (cooldownOverlay != null) cooldownOverlay.fillAmount = 0;
             if (cooldownText != null) cooldownText.text = "";
         }
-    }
-
-    // Helper to find components by potential names
-    private T FindChild<T>(params string[] potentialNames) where T : Component
-    {
-        T[] allComponents = GetComponentsInChildren<T>(true);
-        foreach (var comp in allComponents)
-        {
-            // Check if the GameObject name contains any of our keywords
-            foreach (var nameKey in potentialNames)
-            {
-                if (comp.name.IndexOf(nameKey, System.StringComparison.OrdinalIgnoreCase) >= 0)
-                    return comp;
-            }
-        }
-        return null;
     }
 }
