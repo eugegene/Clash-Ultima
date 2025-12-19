@@ -86,9 +86,11 @@ public class AbilitySlotUI : MonoBehaviour
     {
         if (cooldownOverlay != null)
         {
-            // If condition is MET (true), fill is 0 (Bright/Clear)
-            // If condition is NOT MET (false), fill is 1 (Dark/Overlay)
             cooldownOverlay.fillAmount = isConditionMet ? 0f : 1f;
+        }
+        else
+        {
+            Debug.LogError($"[UI] CRITICAL: 'Cooldown Overlay' is MISSING on {gameObject.name}! Drag the image in the Inspector.");
         }
     }
 }

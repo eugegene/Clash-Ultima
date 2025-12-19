@@ -31,16 +31,18 @@ public class Passive_FlowingRedScale : PassiveDefinition
 
     public override bool IsConditionMet(UnitStats stats)
     {
-        // 1. Find the runtime component
+        // 1. Find the logic component on the player
         var logic = stats.GetComponent<Buff_FlowingRedScale>();
 
-        // 2. If it exists, ask: "Are you active?"
+        // 2. If logic exists, return its active state
+        // (True = Bright/Active, False = Dark/Inactive)
         if (logic != null)
         {
             return logic.IsActive; 
         }
 
-        // Default: If component is missing, assume it's NOT active (Dark)
+        // 3. If logic is missing, return FALSE (Dark Overlay)
+        Debug.LogWarning("[PassiveCheck] Buff_FlowingRedScale component NOT found on player!");
         return false;
     }
 }

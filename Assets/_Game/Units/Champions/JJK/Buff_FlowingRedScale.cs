@@ -28,7 +28,8 @@ public class Buff_FlowingRedScale : MonoBehaviour
 
     // Constants
     private const float COMBAT_TOLERANCE_WINDOW = 3.0f; 
-    private const float ACTIVATION_TIME_REQUIRED = 10.0f;
+    private const float ACTIVATION_TIME_REQUIRED = 1.0f;
+    //private const float ACTIVATION_TIME_REQUIRED = 10.0f;
     private const float DEACTIVATION_COOLDOWN = 20.0f;
 
     public void Initialize(UnitStats stats, float speed, float atkSpeed, float crit)

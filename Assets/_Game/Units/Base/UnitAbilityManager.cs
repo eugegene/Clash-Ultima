@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class UnitAbilityManager : MonoBehaviour
 {
     [Header("Loadout")]
-    public List<PassiveDefinition> passives;
+    public List<PassiveDefinition> passives = new List<PassiveDefinition>();
     public AbilityDefinition abilityQ;
     public AbilityDefinition abilityW;
     public AbilityDefinition abilityE;
