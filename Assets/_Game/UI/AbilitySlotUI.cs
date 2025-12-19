@@ -81,4 +81,14 @@ public class AbilitySlotUI : MonoBehaviour
             if (cooldownText != null) cooldownText.text = "";
         }
     }
+
+    public void SetPassiveState(bool isConditionMet)
+    {
+        if (cooldownOverlay != null)
+        {
+            // If condition is MET (true), fill is 0 (Bright/Clear)
+            // If condition is NOT MET (false), fill is 1 (Dark/Overlay)
+            cooldownOverlay.fillAmount = isConditionMet ? 0f : 1f;
+        }
+    }
 }

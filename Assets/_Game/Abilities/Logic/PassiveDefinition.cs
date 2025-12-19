@@ -12,4 +12,9 @@ public abstract class PassiveDefinition : ScriptableObject
     
     // Called when the Unit dies or passive is removed
     public abstract void OnUnequip(UnitStats stats);
+
+    public virtual bool IsConditionMet(UnitStats stats)
+    {
+        return true; // Default: Always active
+    }
 }

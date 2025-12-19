@@ -13,12 +13,21 @@ public class AbilityHUD : MonoBehaviour
     public Transform passiveContainer;
 
     private UnitAbilityManager _playerRef;
+    private UnitStats _playerStats; // Cache stats for efficiency
     
-    // Active Slots References
+    // Active Slots
     private AbilitySlotUI _slotQ;
     private AbilitySlotUI _slotW;
     private AbilitySlotUI _slotE;
     private AbilitySlotUI _slotR;
+
+    // --- NEW: Track Passives to update them ---
+    private struct PassiveTracker
+    {
+        public PassiveDefinition definition;
+        public AbilitySlotUI ui;
+    }
+    private List<PassiveTracker> _passiveSlots = new List<PassiveTracker>();
 
     void Update()
     {
@@ -27,7 +36,9 @@ public class AbilityHUD : MonoBehaviour
             FindPlayer();
             return;
         }
+
         UpdateCooldowns();
+        UpdatePassives(); // <--- Check conditions every frame
     }
 
     private void FindPlayer()
@@ -36,6 +47,7 @@ public class AbilityHUD : MonoBehaviour
         if (found != null)
         {
             _playerRef = found;
+            _playerStats = found.GetComponent<UnitStats>(); // Get Stats once
             SetupSlots();
         }
     }
@@ -44,60 +56,58 @@ public class AbilityHUD : MonoBehaviour
     {
         if (slotContainer == null) return;
 
-        // --- SMART CONTAINER LOGIC ---
-        // 1. Determine where passives go. (If null, default to the main slot container)
+        // 1. Determine Container
         Transform effectivePassiveContainer = (passiveContainer != null) ? passiveContainer : slotContainer;
 
-        // 2. Clear Main Container
+        // 2. Clear Lists
         foreach (Transform child in slotContainer) Destroy(child.gameObject);
-
-        // 3. Clear Passive Container 
-        // (Only if it is a DIFFERENT object. If it's the same, we just cleared it above!)
         if (effectivePassiveContainer != slotContainer)
         {
             foreach (Transform child in effectivePassiveContainer) Destroy(child.gameObject);
         }
+        _passiveSlots.Clear();
 
-        // --- GENERATION ORDER ---
-        // We generate Passives FIRST. 
-        // If they share a container, this puts Passives on the LEFT.
-
-        // 4. Create Passives
+        // 3. Create Passives
         if (_playerRef.passives != null)
         {
             foreach (var passiveDef in _playerRef.passives)
             {
                 if (passiveDef != null)
                 {
-                    // Use passiveSlotPrefab if available, otherwise fallback to standard slot
                     GameObject prefabToUse = (passiveSlotPrefab != null) ? passiveSlotPrefab : slotPrefab;
-                    CreatePassiveSlot(passiveDef, effectivePassiveContainer, prefabToUse);
+                    AbilitySlotUI ui = CreateSlotObj(prefabToUse, effectivePassiveContainer);
+                    
+                    if (ui != null)
+                    {
+                        ui.Initialize(passiveDef);
+                        // Add to list so we can update it later
+                        _passiveSlots.Add(new PassiveTracker { definition = passiveDef, ui = ui });
+                    }
                 }
             }
         }
 
-        // 5. Create Active Abilities (Q, W, E, R)
-        if (_playerRef.abilityQ != null) _slotQ = CreateSlot(_playerRef.abilityQ, "Q", slotContainer, slotPrefab);
-        if (_playerRef.abilityW != null) _slotW = CreateSlot(_playerRef.abilityW, "W", slotContainer, slotPrefab);
-        if (_playerRef.abilityE != null) _slotE = CreateSlot(_playerRef.abilityE, "E", slotContainer, slotPrefab);
-        if (_playerRef.abilityR != null) _slotR = CreateSlot(_playerRef.abilityR, "R", slotContainer, slotPrefab);
+        // 4. Create Active Abilities
+        if (_playerRef.abilityQ != null) _slotQ = CreateAndInit(_playerRef.abilityQ, "Q");
+        if (_playerRef.abilityW != null) _slotW = CreateAndInit(_playerRef.abilityW, "W");
+        if (_playerRef.abilityE != null) _slotE = CreateAndInit(_playerRef.abilityE, "E");
+        if (_playerRef.abilityR != null) _slotR = CreateAndInit(_playerRef.abilityR, "R");
     }
 
-    private AbilitySlotUI CreateSlot(AbilityDefinition ability, string key, Transform container, GameObject prefab)
+    // Helper to instantiate and return the script
+    private AbilitySlotUI CreateSlotObj(GameObject prefab, Transform container)
     {
         if (prefab == null) return null;
-        GameObject newObj = Instantiate(prefab, container);
-        AbilitySlotUI uiScript = newObj.GetComponent<AbilitySlotUI>();
-        if (uiScript != null) uiScript.Initialize(ability, key);
-        return uiScript;
+        GameObject obj = Instantiate(prefab, container);
+        return obj.GetComponent<AbilitySlotUI>();
     }
 
-    private void CreatePassiveSlot(PassiveDefinition passive, Transform container, GameObject prefab)
+    // Helper for Actives
+    private AbilitySlotUI CreateAndInit(AbilityDefinition def, string key)
     {
-        if (prefab == null) return;
-        GameObject newObj = Instantiate(prefab, container);
-        AbilitySlotUI uiScript = newObj.GetComponent<AbilitySlotUI>();
-        if (uiScript != null) uiScript.Initialize(passive);
+        AbilitySlotUI ui = CreateSlotObj(slotPrefab, slotContainer);
+        if (ui != null) ui.Initialize(def, key);
+        return ui;
     }
 
     private void UpdateCooldowns()
@@ -106,5 +116,20 @@ public class AbilityHUD : MonoBehaviour
         if (_slotW != null) _slotW.UpdateCooldown(_playerRef.cooldownW);
         if (_slotE != null) _slotE.UpdateCooldown(_playerRef.cooldownE);
         if (_slotR != null) _slotR.UpdateCooldown(_playerRef.cooldownR);
+    }
+
+    // --- NEW: Update Passives Loop ---
+    private void UpdatePassives()
+    {
+        if (_playerStats == null) return;
+
+        foreach (var tracker in _passiveSlots)
+        {
+            // Ask the definition: "Are we happy?"
+            bool conditionMet = tracker.definition.IsConditionMet(_playerStats);
+            
+            // Tell the UI: "Show Overlay if unhappy"
+            tracker.ui.SetPassiveState(conditionMet);
+        }
     }
 }

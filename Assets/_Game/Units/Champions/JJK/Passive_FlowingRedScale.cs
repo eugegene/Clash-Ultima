@@ -28,4 +28,19 @@ public class Passive_FlowingRedScale : PassiveDefinition
             Destroy(logic);
         }
     }
+
+    public override bool IsConditionMet(UnitStats stats)
+    {
+        // 1. Find the runtime component
+        var logic = stats.GetComponent<Buff_FlowingRedScale>();
+
+        // 2. If it exists, ask: "Are you active?"
+        if (logic != null)
+        {
+            return logic.IsActive; 
+        }
+
+        // Default: If component is missing, assume it's NOT active (Dark)
+        return false;
+    }
 }

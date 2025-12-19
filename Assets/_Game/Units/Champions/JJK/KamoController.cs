@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(UnitAttack))]
 public class KamoController : MonoBehaviour
 {
-    [Header("Q: Blood Arrows Settings")]
+    [Header("Blood Arrows Settings")]
     public float healthCost = 10f;
     public float energyCost = 5f; 
     public float bonusDamage = 15f;

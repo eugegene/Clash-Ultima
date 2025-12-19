@@ -3,6 +3,8 @@ using System; // Required for Action
 
 public class Buff_FlowingRedScale : MonoBehaviour
 {
+    public bool IsActive => _isActive;
+
     private UnitStats _stats;
     private UnitAttack _attack;
 
